@@ -1,7 +1,7 @@
 # HTTP-Projekt
 Ten projekt to rozwiązanie składające się z dwóch projektów: serwera i klienta. Serwer umożliwia składanie zamówień na rowery przez użytkowników. Dodatkowo generuje on dokumentację w Swaggerze. Klient jest napisany w WinUI 3 i umożliwia pracownikom sklepu i magazynu (Magazynierowi i Sprzedawcy) potwierdzanie dostępności i złożenia roweru dla klienta oraz sprzedaży roweru.
 
-Aby uruchomić to rozwiązanie, należy mieć zainstalowane [.NET 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) oraz [Visual Studio 2022](https://visualstudio.microsoft.com/) . Inne wersje .NET oraz inne edytory kodu nie były testowane i nie są wspierane. Projekt jest przeznaczony dla systemu Windows 10 lub Windows 11.
+Aby uruchomić to rozwiązanie, należy mieć zainstalowane [.NET 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) oraz [Visual Studio 2022](https://visualstudio.microsoft.com/). Inne wersje .NET oraz inne edytory kodu nie były testowane i nie są wspierane. Projekt jest przeznaczony dla systemu Windows 10 lub Windows 11.
 
 Kroki, aby uruchomić projekt:
 

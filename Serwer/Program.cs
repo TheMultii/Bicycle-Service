@@ -1,4 +1,6 @@
+using Microsoft.Data.Sqlite;
 using Microsoft.OpenApi.Models;
+
 const string baseAPIVersion = "v1";
 const string baseAPIName = "Serwis Rowerowy";
 
@@ -47,5 +49,19 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// db init
+if (!Directory.Exists("database")) {
+    Directory.CreateDirectory("database");
+}
+SqliteConnection _connection = new("Data Source=database/serwis.sqlite");
+_connection.Open();
+string script = File.ReadAllText("init_migration_tables.sql");
+Console.WriteLine(script);
+var command = _connection.CreateCommand();
+command.CommandText = script;
+command.ExecuteNonQuery();
+_connection.Close();
+
 
 app.Run();

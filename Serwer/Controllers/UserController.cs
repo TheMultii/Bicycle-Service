@@ -15,7 +15,7 @@ namespace Serwer.Controllers {
     public class UserController : ControllerBase {
 
         private readonly IUserService _userService;
-        private readonly SqliteConnection _connection;
+        private static readonly SqliteConnection _connection = new("Data Source=database/serwis.sqlite");
 
         private readonly DateTime epoch = new(2015, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         private readonly IdStructure structure = new(41, 10, 12);
@@ -27,7 +27,6 @@ namespace Serwer.Controllers {
             options = new(structure, new DefaultTimeSource(epoch));
             generator = new(0, options);
 
-            _connection = new("Data Source=database/serwis.sqlite");
             _connection.Open();
         }
 

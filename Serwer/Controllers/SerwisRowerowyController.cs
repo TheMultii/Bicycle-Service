@@ -1,22 +1,23 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 
 namespace Serwer.Controllers {
 
-    [Route("api/[controller]")]
+    [Route("api/service")]
     [ApiController]
-    public class SerwisRowerowy : ControllerBase {
+    public class SerwisRowerowyController : ControllerBase {
         private static readonly SqliteConnection _connection = new("Data Source=database/serwis.sqlite");
 
-        public SerwisRowerowy() {
+        public SerwisRowerowyController() {
             _connection.Open();
         }
 
-        ~SerwisRowerowy() {
+        ~SerwisRowerowyController() {
             _connection.Close();
         }
 
-        [HttpGet(Name = "GetTest")]
+        [HttpGet("GetTest")]
         public string GetTest() {
             var command = _connection.CreateCommand();
             command.CommandText = "SELECT random()";
@@ -25,7 +26,8 @@ namespace Serwer.Controllers {
             return resultString ?? "null";
         }
         
-        [HttpPost]
+        [HttpPost("PostTest")]
+        [Authorize(Roles="Customer")]
         [Produces("application/json")]
         public dynamic Post([FromForm] string? value, [FromForm] string? v2) {
             dynamic _dynamic = new System.Dynamic.ExpandoObject();

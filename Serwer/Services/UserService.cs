@@ -23,5 +23,22 @@ namespace Serwer.Services {
             }
             return result;
         }
+
+        public DateTime GetExpirationDate() {
+            DateTime result;
+            string string_result = string.Empty;
+            if (_httpContextAccessor.HttpContext != null) {
+                string_result = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Expiration) ?? string.Empty;
+            }
+            if (string_result.Length == 0) {
+                throw new Exception("JWT Parse Error");
+            }
+            try {
+                result = DateTime.Parse(string_result);
+            } catch (Exception) {
+                throw new Exception("JWT Parse Error");
+            }
+            return result;
+        }
     }
 }

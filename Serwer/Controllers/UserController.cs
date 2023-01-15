@@ -18,21 +18,7 @@ namespace Serwer.Controllers {
         public UserController(IUserService userService) {
             _userService = userService;
         }
-
-        /// <summary>
-        /// Get information about logged in user
-        /// </summary>
-        /// <returns>Username and role</returns>
-        [HttpGet("info"), Authorize]
-        public ActionResult<object> GetMe() {
-            var name = _userService.GetName();
-            var role = _userService.GetRole();
-            if (name == string.Empty || role == string.Empty) {
-                return Unauthorized();
-            }
-            return new { name, role };
-        }
-
+        
         /// <summary>
         /// Register new user
         /// </summary>
@@ -73,8 +59,44 @@ namespace Serwer.Controllers {
             if (!VerifyPasswordHash(request.Password, _user.PasswordHash, _user.PasswordSalt)) {
                 return BadRequest("Wrong password");
             }
-            string jwtToken = CreateToken(_user);
-            return Ok(jwtToken);
+            
+            return Ok(CreateToken(_user));
+         }
+
+        /// <summary>
+        /// Get information about logged in user
+        /// </summary>
+        /// <returns>Username and role</returns>
+        [HttpGet("info"), Authorize]
+        public ActionResult<object> GetMe() {
+            var name = _userService.GetName();
+            var role = _userService.GetRole();
+            if (name == string.Empty || role == string.Empty) {
+                return Unauthorized();
+            }
+            return Ok(new { name, role });
+        }
+
+        /// <summary>
+        /// Refresh user token for another day
+        /// </summary>
+        /// <returns>New JWT Authorization Token</returns>
+        [HttpPost("refresh"), Authorize]
+        public ActionResult<string> RefreshToken() {
+            DateTime expiration = _userService.GetExpirationDate();
+            
+            //check if it is less than two hours to expiration date
+            if (expiration.Subtract(DateTime.Now).TotalHours > 2) {
+                return BadRequest("The token is not yet up for renewal.");
+            }
+
+            // I should probably use refreshToken field to make sure (or make life harder for the thief)
+            // that I am renewing the token for the right person.
+            // For demonstration purposes, I won't make it harder to understand.
+            User? userRenewal = _user; // db query
+            if (userRenewal == null) return Unauthorized();
+            
+            return Ok(CreateToken(userRenewal));
         }
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt) {
@@ -90,16 +112,18 @@ namespace Serwer.Controllers {
         }
 
         private string CreateToken(User user) {
+            DateTime expDate = DateTime.Now.AddDays(1);
             List<Claim> claims = new() {
                 new Claim(ClaimTypes.NameIdentifier, user.UID),
                 new Claim(ClaimTypes.Name, user.Login),
-                new Claim(ClaimTypes.Role, user.AccountType)
+                new Claim(ClaimTypes.Role, user.AccountType),
+                new Claim(ClaimTypes.Expiration, expDate.ToString())
             };
             SymmetricSecurityKey key = new(System.Text.Encoding.UTF8.GetBytes(ENVLoader.GetString("TOKEN")));
             SigningCredentials creds = new(key, SecurityAlgorithms.HmacSha512Signature);
             JwtSecurityToken token = new(
                 claims: claims,
-                expires: DateTime.Now.AddDays(1),
+                expires: expDate,
                 signingCredentials: creds
             );
             return new JwtSecurityTokenHandler().WriteToken(token);

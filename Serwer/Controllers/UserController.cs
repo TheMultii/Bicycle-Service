@@ -30,6 +30,10 @@ namespace Serwer.Controllers {
             _connection.Open();
         }
 
+        ~UserController() {
+            _connection.Close();
+        }
+
         /// <summary>
         /// Register new user
         /// </summary>

@@ -109,7 +109,7 @@ if (!Directory.Exists("database")) {
 SqliteConnection _connection = new("Data Source=database/serwis.sqlite");
 _connection.Open();
 string script = File.ReadAllText("init_migration_tables.sql");
-Console.WriteLine(script);
+
 var command = _connection.CreateCommand();
 command.CommandText = script;
 command.ExecuteNonQuery();

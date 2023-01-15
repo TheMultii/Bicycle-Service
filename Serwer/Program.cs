@@ -3,8 +3,8 @@ using Microsoft.Data.Sqlite;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serwer;
+using Serwer.Services;
 using Swashbuckle.AspNetCore.Filters;
-using System.Net;
 using System.Reflection;
 using System.Text;
 
@@ -37,6 +37,8 @@ builder.Services.AddProblemDetails(options => {
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddSwaggerGen(options => {
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme {
         Description = "Standard Authorization header using the Bearer scheme (\"Bearer {token}\")",

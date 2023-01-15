@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Serwer.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -9,12 +11,26 @@ namespace Serwer.Controllers {
     [Route("api/user")]
     [ApiController]
     public class UserController : ControllerBase {
-
+        
         private static User? _user;
-        private IConfiguration _configuration;
+        private readonly IUserService _userService;
 
-        public UserController(IConfiguration configuration) {
-            _configuration = configuration;
+        public UserController(IUserService userService) {
+            _userService = userService;
+        }
+
+        /// <summary>
+        /// Get information about logged in user
+        /// </summary>
+        /// <returns>Username and role</returns>
+        [HttpGet("info"), Authorize]
+        public ActionResult<object> GetMe() {
+            var name = _userService.GetName();
+            var role = _userService.GetRole();
+            if (name == string.Empty || role == string.Empty) {
+                return Unauthorized();
+            }
+            return new { name, role };
         }
 
         /// <summary>

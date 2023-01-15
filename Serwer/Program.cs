@@ -22,6 +22,8 @@ string getAPIVersion() {
     return $"{baseAPIVersion}-{monthDate}";
 }
 
+ENVLoader.Load(".env");
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -67,8 +69,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(
-                builder.Configuration.GetSection("AppSettings:Token").Value ?? throw new InvalidOperationException())
-            ),
+                ENVLoader.GetString("TOKEN")
+            )),
             ValidateIssuer = false,
             ValidateAudience = false
         };

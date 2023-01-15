@@ -79,7 +79,7 @@ namespace Serwer.Controllers {
                 new Claim(ClaimTypes.Name, user.Login),
                 new Claim(ClaimTypes.Role, user.AccountType)
             };
-            SymmetricSecurityKey key = new(System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value ?? throw new InvalidOperationException()));
+            SymmetricSecurityKey key = new(System.Text.Encoding.UTF8.GetBytes(ENVLoader.GetString("TOKEN")));
             SigningCredentials creds = new(key, SecurityAlgorithms.HmacSha512Signature);
             JwtSecurityToken token = new(
                 claims: claims,

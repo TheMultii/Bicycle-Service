@@ -29,7 +29,7 @@ builder.Services.AddControllers();
 builder.Services.AddProblemDetails(options => {
     options.CustomizeProblemDetails = (context) => {
         context.ProblemDetails.Title = "An error occurred!";
-        context.ProblemDetails.Status = (int)HttpStatusCode.InternalServerError;
+        context.ProblemDetails.Status = context.HttpContext.Response.StatusCode;
         context.ProblemDetails.Detail = context.ProblemDetails.Detail;
         context.ProblemDetails.Instance = context.HttpContext.Request.Path;
         context.ProblemDetails.Type = null;

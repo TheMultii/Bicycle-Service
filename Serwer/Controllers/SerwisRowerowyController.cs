@@ -25,22 +25,6 @@ namespace Serwer.Controllers {
             var resultString = result?.ToString();
             return resultString ?? "null";
         }
-        
-        [HttpPost("PostTest")]
-        [Authorize(Roles="Customer")]
-        [Produces("application/json")]
-        public dynamic Post([FromForm] string? value, [FromForm] string? v2) {
-            dynamic _dynamic = new System.Dynamic.ExpandoObject();
-            dynamic dyn = new System.Dynamic.ExpandoObject();
-            dyn.a = "A";
-            dyn.b = "B";
-            dyn.c = "C";
-            dyn.d = v2;
-            _dynamic.value = value;
-            _dynamic.dynamic = dyn;
-            _dynamic.time = DateTime.Now.ToString();
-            return _dynamic;
-        }
 
     }
 }

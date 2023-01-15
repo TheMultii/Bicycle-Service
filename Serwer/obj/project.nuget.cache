@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "lZ/wCj7oQHq0XfM8hbW0ORSlgTR1brxfcjVnYuAj1nkcqf5bvUhXFYEknoqfTviCrF+fqdujtH2HBMkUc25Mjw==",
+  "dgSpecHash": "wVIE/9y0Zq4e+d/+ADaLFCCZM3UZx1k3F9ymu8KehTtmnA5I8t8tO1J+iKXn86ANU78MgXgIx+uXMDtjzdy4EQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\Marcel\\OneDrive - Akademia Techniczno-Humanistyczna\\http\\projekt\\Serwer\\Serwer.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Marcel\\.nuget\\packages\\idgen\\3.0.3\\idgen.3.0.3.nupkg.sha512",
     "C:\\Users\\Marcel\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\7.0.2\\microsoft.aspnetcore.authentication.jwtbearer.7.0.2.nupkg.sha512",
     "C:\\Users\\Marcel\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.2\\microsoft.aspnetcore.openapi.7.0.2.nupkg.sha512",
     "C:\\Users\\Marcel\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",

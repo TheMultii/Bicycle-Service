@@ -19,7 +19,7 @@
         }
 
         public Zamówienie(string imieKlienta, string nazwiskoKlienta, Rower rower, DateTime dataZamówienia, DateTime dataOdbioru, IEnumerable<string>? statusZamówienia = null) {
-            _id = GenerujSnowflake();
+            _id = 0;
             _imieKlienta = imieKlienta;
             _nazwiskoKlienta = nazwiskoKlienta;
             _rower = rower;
@@ -72,8 +72,6 @@
             list.Add(status);
             _statusZamówienia = list;
         }
-
-        private static long GenerujSnowflake() => Snowflake.Next();
 
     }
 }

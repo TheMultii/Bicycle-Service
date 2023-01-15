@@ -7,6 +7,7 @@
     login        TEXT UNIQUE
                       NOT NULL,
     password     TEXT NOT NULL,
+	passwordSalt TEXT NOT NULL,
     account_type TEXT NOT NULL
                       CONSTRAINT account_type_check CHECK (account_type IN ('Customer', 'Service', 'Shop') ) 
 );

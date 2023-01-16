@@ -98,7 +98,7 @@ namespace Serwer.Controllers {
         /// </summary>
         /// <param name="uid">UID of bike</param>
         /// <returns>Bike if exists</returns>
-        [HttpGet("bicycles/{id}")]
+        [HttpGet("bicycles/{uid}")]
         [Authorize]
         public ActionResult<Rower> GetBicycle(long uid) {
             string permission = _userService.GetRole().ToLower();
@@ -198,7 +198,7 @@ namespace Serwer.Controllers {
         /// <param name="uid">UID of an order</param>
         /// <param name="request">Order JSON</param>
         /// <returns>Modified order</returns>
-        [HttpPut("orders/{id}")]
+        [HttpPut("orders/{uid}")]
         [Authorize]
         public ActionResult<RowerReturnable> UpdateOrder(long uid, RowerDTO request) {
             string permission = _userService.GetRole().ToLower();
@@ -244,7 +244,7 @@ namespace Serwer.Controllers {
         /// <param name="uid">UID of an order</param>
         /// <param name="request">JSON with order status</param>
         /// <returns>Modified order</returns>
-        [HttpPut("order/{id}/status")]
+        [HttpPut("order/{uid}/status")]
         [Authorize]
         public ActionResult<RowerReturnable> UpdateOrderStatus(long uid, RowerStatusDTO request) {
             string permission = _userService.GetRole().ToLower();

@@ -203,7 +203,39 @@ namespace Serwer.Controllers {
         public ActionResult<RowerReturnable> UpdateOrder(long uid, RowerDTO request) {
             string permission = _userService.GetRole().ToLower();
             if (permission != "service" || permission != "shop") return Unauthorized();
-            throw new NotImplementedException();
+
+            SqliteCommand command = _connection.CreateCommand();
+            command.CommandText =
+                @"
+                    UPDATE Bicycles
+                    SET brand = @brand, model = @model, type = @type, price = @price
+                    WHERE uid = @uid    
+                ";
+            command.Parameters.AddWithValue("@uid", uid);
+            command.Parameters.AddWithValue("@brand", request.Brand);
+            command.Parameters.AddWithValue("@model", request.Model);
+            command.Parameters.AddWithValue("@type", request.Type);
+            command.Parameters.AddWithValue("@price", request.Price);
+            command.ExecuteNonQuery();
+
+            command = _connection.CreateCommand();
+            command.CommandText = "SELECT status FROM OrderStatuses WHERE bicycle = @uid";
+            command.Parameters.AddWithValue("@uid", uid);
+            SqliteDataReader reader = command.ExecuteReader();
+            List<string> status = new();
+            while (reader.Read()) {
+                status.Add(reader.GetString(0));
+            }
+
+            RowerReturnable returnable = new() {
+                UID = uid,
+                Brand = request.Brand,
+                Model = request.Model,
+                Type = request.Type,
+                Price = request.Price,
+                Status = status
+            };
+            return Ok(returnable);
         }
 
         /// <summary>

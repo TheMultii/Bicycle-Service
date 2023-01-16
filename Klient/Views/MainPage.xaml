@@ -7,6 +7,6 @@
     mc:Ignorable="d">
 
     <Grid x:Name="ContentArea">
-        
+        <Image HorizontalAlignment="Left" VerticalAlignment="Top" Source="/Assets/piranyaa.png" Width="150" Height="150" />
     </Grid>
 </Page>

@@ -30,7 +30,7 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware
         {
             Source.Add(item);
         }
-        Source.Add(new SampleOrder() { OrderID = 1237, OrderDate = DateTime.Now, Status = "ready" });
+        Source.Add(new SampleOrder() { OrderID = 1237, OrderDate = DateTime.Now, Status = "ready", SymbolName="Trash", SymbolCode=57607 });
     }
 
     public void OnNavigatedFrom()

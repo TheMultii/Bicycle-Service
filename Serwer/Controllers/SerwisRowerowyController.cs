@@ -142,7 +142,7 @@ namespace Serwer.Controllers {
         [Authorize]
         public ActionResult<RowerReturnable> CreateOrder(RowerDTO request) {
             string permission = _userService.GetRole().ToLower();
-            if (permission != "service" || permission != "shop") return Unauthorized();
+            if (permission == "service" || permission == "shop") return Unauthorized();
             
             if (request.Brand == null || request.Model == null || request.Type == null || request.Price == 0.0) {
                 return BadRequest();
@@ -150,7 +150,7 @@ namespace Serwer.Controllers {
 
             string user_name = _userService.GetName();
             SqliteCommand command = _connection.CreateCommand();
-            command.CommandText = "SELECT uid FROM Users WHERE name = @name";
+            command.CommandText = "SELECT uid FROM Users WHERE login = @name";
             command.Parameters.AddWithValue("@name", user_name);
             SqliteDataReader reader = command.ExecuteReader();
             if (reader.Read()) {
@@ -268,7 +268,7 @@ namespace Serwer.Controllers {
             status.Add(request.Status);
 
             command = _connection.CreateCommand();
-            command.CommandText = "SELECT uid from Users WHERE name = @name";
+            command.CommandText = "SELECT uid from Users WHERE login = @name";
             command.Parameters.AddWithValue("@name", _userService.GetName());
             reader = command.ExecuteReader();
             if (reader.Read()) {
@@ -323,7 +323,7 @@ namespace Serwer.Controllers {
             List<RowerReturnable> returnable = new();
 
             SqliteCommand command = _connection.CreateCommand();
-            command.CommandText = "SELECT uid FROM Users WHERE name = @name";
+            command.CommandText = "SELECT uid FROM Users WHERE login = @name";
             command.Parameters.AddWithValue("@name", _name);
             SqliteDataReader reader = command.ExecuteReader();
             if (reader.Read()) {
@@ -351,6 +351,7 @@ namespace Serwer.Controllers {
 
                     RowerReturnable rower = new() {
                         UID = bicycle_uid,
+                        OwnerUID = uid,
                         Brand = brand,
                         Model = model,
                         Type = type,
@@ -359,9 +360,8 @@ namespace Serwer.Controllers {
                     };
                     returnable.Add(rower);
                 }
-                return Ok(returnable);
             }
-            return NotFound();
+            return Ok(returnable);
         }
 
     }

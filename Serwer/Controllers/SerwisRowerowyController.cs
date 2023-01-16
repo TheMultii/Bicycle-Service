@@ -320,7 +320,48 @@ namespace Serwer.Controllers {
         [Authorize(Roles = "Customer")]
         public ActionResult<IEnumerable<RowerReturnable>> GetMyOrders() {
             string _name = _userService.GetName();
-            throw new NotImplementedException();
+            List<RowerReturnable> returnable = new();
+
+            SqliteCommand command = _connection.CreateCommand();
+            command.CommandText = "SELECT uid FROM Users WHERE name = @name";
+            command.Parameters.AddWithValue("@name", _name);
+            SqliteDataReader reader = command.ExecuteReader();
+            if (reader.Read()) {
+                long uid = reader.GetInt64(0);
+
+                command = _connection.CreateCommand();
+                command.CommandText = "SELECT uid, brand, model, type, price FROM Bicycles WHERE owner = @uid";
+                command.Parameters.AddWithValue("@uid", uid);
+                reader = command.ExecuteReader();
+                while (reader.Read()) {
+                    long bicycle_uid = reader.GetInt64(0);
+                    string brand = reader.GetString(1);
+                    string model = reader.GetString(2);
+                    string type = reader.GetString(3);
+                    double price = reader.GetDouble(4);
+
+                    command = _connection.CreateCommand();
+                    command.CommandText = "SELECT status FROM OrderStatuses WHERE bicycle = @uid";
+                    command.Parameters.AddWithValue("@uid", bicycle_uid);
+                    SqliteDataReader status_reader = command.ExecuteReader();
+                    List<string> status = new();
+                    while (status_reader.Read()) {
+                        status.Add(status_reader.GetString(0));
+                    }
+
+                    RowerReturnable rower = new() {
+                        UID = bicycle_uid,
+                        Brand = brand,
+                        Model = model,
+                        Type = type,
+                        Price = price,
+                        Status = status
+                    };
+                    returnable.Add(rower);
+                }
+                return Ok(returnable);
+            }
+            return NotFound();
         }
 
     }

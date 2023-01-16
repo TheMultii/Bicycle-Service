@@ -142,13 +142,29 @@ namespace Serwer.Controllers {
         /// </summary>
         /// <returns>Username and role</returns>
         [HttpGet("info"), Authorize]
-        public ActionResult<object> GetUserInfo() {
+        public ActionResult<UserMyDataDTO> GetUserInfo() {
             var name = _userService.GetName();
             var role = _userService.GetRole();
             if (name == string.Empty || role == string.Empty) {
                 return Unauthorized();
             }
-            return Ok(new { name, role });
+
+            SqliteCommand command = _connection.CreateCommand();
+            command.CommandText = "SELECT uid from Users WHERE login = @name";
+            command.Parameters.AddWithValue("@name", _userService.GetName());
+            var reader = command.ExecuteReader();
+            long user_uid = 0;
+            if (reader.Read()) {
+                user_uid = reader.GetInt64(0);
+            }
+
+            UserMyDataDTO userMyData = new() {
+                UID = user_uid,
+                Username = name,
+                Permission = role
+            };
+
+            return Ok(userMyData);
         }
 
         /// <summary>
@@ -192,6 +208,16 @@ namespace Serwer.Controllers {
             if (userRenewal == null) return Unauthorized();
             
             return Ok(CreateToken(userRenewal));
+        }
+
+        /// <summary>
+        /// TEST
+        /// </summary>
+        /// <returns>Test</returns>
+        [HttpGet("test")]
+        [Produces("text/plain")]
+        public ActionResult<string> Test() {
+            return Ok($"Test | {generator.CreateId()}");
         }
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt) {

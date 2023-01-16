@@ -26,15 +26,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddProblemDetails(options => {
-    options.CustomizeProblemDetails = (context) => {
-        context.ProblemDetails.Title = "An error occurred!";
-        context.ProblemDetails.Status = context.HttpContext.Response.StatusCode;
-        context.ProblemDetails.Detail = context.ProblemDetails.Detail;
-        context.ProblemDetails.Instance = context.HttpContext.Request.Path;
-        context.ProblemDetails.Type = null;
-    };
-});
+//builder.Services.AddProblemDetails(options => {
+//    options.CustomizeProblemDetails = (context) => {
+//        context.ProblemDetails.Title = "An error occurred!";
+//        context.ProblemDetails.Status = context.HttpContext.Response.StatusCode;
+//        context.ProblemDetails.Detail = context.ProblemDetails.Detail;
+//        context.ProblemDetails.Instance = context.HttpContext.Request.Path;
+//        context.ProblemDetails.Type = context.ProblemDetails.Type;
+//    };
+//});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -90,7 +90,7 @@ if (app.Environment.IsDevelopment()) {
 
 app.UseHttpsRedirection();
 
-app.UseExceptionHandler();
+//app.UseExceptionHandler();
 app.UseStatusCodePages();
 if (app.Environment.IsDevelopment()) {
     app.UseDeveloperExceptionPage();

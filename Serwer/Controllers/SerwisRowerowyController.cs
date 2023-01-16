@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using IdGen;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using Serwer.Services;
@@ -11,12 +12,21 @@ namespace Serwer.Controllers {
         private static readonly SqliteConnection _connection = new("Data Source=database/serwis.sqlite");
         private readonly IUserService _userService;
 
+        private readonly DateTime epoch = new(2015, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private readonly IdStructure structure = new(41, 10, 12);
+        private readonly IdGeneratorOptions options;
+        private readonly IdGenerator generator;
+
         public SerwisRowerowyController(IUserService userService) {
             _userService = userService;
+            
+            options = new(structure, new DefaultTimeSource(epoch));
+            generator = new(0, options);
+            
             _connection.Open();
         }
 
-        private User _getUserByUID(long uid) {
+        private static User _getUserByUID(long uid) {
             SqliteCommand command = _connection.CreateCommand();
             command.CommandText = "SELECT uid, name, surname, account_type FROM Users WHERE uid = @uid";
             command.Parameters.AddWithValue("@uid", uid);
@@ -141,15 +151,51 @@ namespace Serwer.Controllers {
             string user_name = _userService.GetName();
             SqliteCommand command = _connection.CreateCommand();
             command.CommandText = "SELECT uid FROM Users WHERE name = @name";
+            command.Parameters.AddWithValue("@name", user_name);
+            SqliteDataReader reader = command.ExecuteReader();
+            if (reader.Read()) {
+                long user_uid = reader.GetInt64(0);
+                long uid = generator.CreateId();
+                List<string> status = new();
+                
+                command = _connection.CreateCommand();
+                command.CommandText = "INSERT INTO Bicycles (uid, owner, brand, model, type, price) VALUES (@uid, @owner, @brand, @model, @type, @price)";
+                command.Parameters.AddWithValue("@uid", uid);
+                command.Parameters.AddWithValue("@owner", user_uid);
+                command.Parameters.AddWithValue("@brand", request.Brand);
+                command.Parameters.AddWithValue("@model", request.Model);
+                command.Parameters.AddWithValue("@type", request.Type);
+                command.Parameters.AddWithValue("@price", request.Price);
+                command.ExecuteNonQuery();
 
+                status.Add("Nowe zamówienie");
 
-            throw new NotImplementedException();
+                command = _connection.CreateCommand();
+                command.CommandText = "INSERT INTO OrderStatuses (uid, bicycle, changed_by, status) VALUES (@uid, @bicycle, @changed_by, @status)";
+                long status_uid = generator.CreateId();
+                command.Parameters.AddWithValue("@uid", status_uid);
+                command.Parameters.AddWithValue("@bicycle", uid);
+                command.Parameters.AddWithValue("@changed_by", user_uid);
+                command.Parameters.AddWithValue("@status", status[0]);
+                command.ExecuteNonQuery();
+
+                return Ok(new RowerReturnable {
+                    UID = uid,
+                    OwnerUID = user_uid,
+                    Brand = request.Brand,
+                    Model = request.Model,
+                    Type = request.Type,
+                    Price = request.Price,
+                    Status = status
+                });
+            }
+            return NotFound();
         }
 
         /// <summary>
         /// Update an order
         /// </summary>
-        /// <param name="uid">ID of an order</param>
+        /// <param name="uid">UID of an order</param>
         /// <param name="request">Order JSON</param>
         /// <returns>Modified order</returns>
         [HttpPut("orders/{id}")]
@@ -163,7 +209,7 @@ namespace Serwer.Controllers {
         /// <summary>
         /// Set current order status
         /// </summary>
-        /// <param name="uid">ID of an order</param>
+        /// <param name="uid">UID of an order</param>
         /// <param name="request">JSON with order status</param>
         /// <returns>Modified order</returns>
         [HttpPut("order/{id}/status")]

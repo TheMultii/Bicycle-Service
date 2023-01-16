@@ -24,6 +24,7 @@ namespace Serwer.Controllers {
 
         public UserController(IUserService userService) {
             _userService = userService;
+
             options = new(structure, new DefaultTimeSource(epoch));
             generator = new(0, options);
 

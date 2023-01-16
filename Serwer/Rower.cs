@@ -121,5 +121,9 @@
         public double Price {
             get; set;
         } = 0.0;
+
+        public List<string> Status {
+            get; set;
+        } = new List<string>();
     }
 }

@@ -1,10 +1,10 @@
-{
-  "profiles": {
-    "Klient (Package)": {
-      "commandName": "MsixPackage"
-    },
-    "Klient (Unpackaged)": {
-      "commandName": "Project"
+﻿{
+    "profiles": {
+      "Klient (Package)": {
+        "commandName": "MsixPackage"
+      },
+      "Klient (Unpackaged)": {
+        "commandName": "Project"
+      }
     }
-  }
 }

@@ -14,7 +14,7 @@ public class MainViewModel : ObservableRecipient {
         get => _login;
         set => SetProperty(ref _login, value);
     }
-    
+
     private string _password = string.Empty;
     public string Password {
         get => _password;
@@ -51,18 +51,44 @@ public class MainViewModel : ObservableRecipient {
         get => _register_password_confirm;
         set => SetProperty(ref _register_password_confirm, value);
     }
-    
+
     //methods
 
-    internal async void RegisterButtonClick(object sender, RoutedEventArgs e) {
+    private static async Task<ContentDialogResult> DisplayError(object sender, string errorMessage, string errorTitle = "Błąd", string errorButtonText = "OK") {
+        ContentDialog dialog = new() {
+            XamlRoot = ((Button)sender).XamlRoot,
+            Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+            Title = errorTitle,
+            Content = errorMessage,
+            PrimaryButtonText = errorButtonText,
+            DefaultButton = ContentDialogButton.Primary
+        };
 
+        return await dialog.ShowAsync();
+    }
+
+    internal async void RegisterButtonClick(object sender, RoutedEventArgs e) {
+        string errorMessage = string.Empty;
+        bool displayError = false;
+
+        if (_login.Length < 3 || _login.Length > 100) {
+            errorMessage = "Login musi zawierać od 3 do 100 znaków";
+            displayError = true;
+        } else if (_password.Length < 3 || _password.Length > 100) {
+            errorMessage = "Hasło musi zawierać od 3 do 100 znaków";
+            displayError = true;
+        }
+        if (displayError) {
+            await DisplayError(sender, errorMessage);
+            return;
+        }
     }
 
     internal async void LoginButtonClick(object sender, RoutedEventArgs e) {
         string errorMessage = string.Empty;
         bool displayError = false;
 
-        if(_login.Length < 3 || _login.Length > 100) {
+        if (_login.Length < 3 || _login.Length > 100) {
             errorMessage = "Login musi zawierać od 3 do 100 znaków";
             displayError = true;
         } else if (_password.Length < 3 || _password.Length > 100) {
@@ -71,17 +97,7 @@ public class MainViewModel : ObservableRecipient {
         }
 
         if (displayError) {
-
-            ContentDialog dialog = new() {
-                XamlRoot = ((Button)sender).XamlRoot,
-                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-                Title = "Błąd",
-                Content = errorMessage,
-                PrimaryButtonText = "OK",
-                DefaultButton = ContentDialogButton.Primary
-            };
-
-            var result = await dialog.ShowAsync();
+            await DisplayError(sender, errorMessage);
             return;
         }
 

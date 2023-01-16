@@ -26,7 +26,7 @@ namespace Serwer.Controllers {
             _connection.Open();
         }
 
-        private static User _getUserByUID(long uid) {
+        private static User GetUserByUID(long uid) {
             SqliteCommand command = _connection.CreateCommand();
             command.CommandText = "SELECT uid, name, surname, account_type FROM Users WHERE uid = @uid";
             command.Parameters.AddWithValue("@uid", uid);
@@ -68,7 +68,7 @@ namespace Serwer.Controllers {
             while (reader.Read()) {
                 long uid = reader.GetInt64(0);
                 long owner_id = reader.GetInt64(1);
-                User owner = _getUserByUID(owner_id);
+                User owner = GetUserByUID(owner_id);
                 string brand = reader.GetString(2);
                 string model = reader.GetString(3);
                 string type = reader.GetString(4);
@@ -82,7 +82,7 @@ namespace Serwer.Controllers {
                 while (status_reader.Read()) {
                     long status_uid = status_reader.GetInt64(0);
                     long changed_by_id = status_reader.GetInt64(1);
-                    User changed_by = _getUserByUID(changed_by_id);
+                    User changed_by = GetUserByUID(changed_by_id);
                     string status_name = status_reader.GetString(2);
                     status.Add(new RowerStatus(status_uid, changed_by, status_name));
                 }
@@ -110,7 +110,7 @@ namespace Serwer.Controllers {
             var reader = command.ExecuteReader();
             if (reader.Read()) {
                 long owner_id = reader.GetInt64(1);
-                User owner = _getUserByUID(owner_id);
+                User owner = GetUserByUID(owner_id);
                 string brand = reader.GetString(2);
                 string model = reader.GetString(3);
                 string type = reader.GetString(4);
@@ -124,7 +124,7 @@ namespace Serwer.Controllers {
                 while (status_reader.Read()) {
                     long status_uid = status_reader.GetInt64(0);
                     long changed_by_id = status_reader.GetInt64(1);
-                    User changed_by = _getUserByUID(changed_by_id);
+                    User changed_by = GetUserByUID(changed_by_id);
                     string status_name = status_reader.GetString(2);
                     status.Add(new RowerStatus(status_uid, changed_by, status_name));
                 }

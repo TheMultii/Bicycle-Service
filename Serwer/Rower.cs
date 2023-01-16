@@ -1,53 +1,125 @@
 ﻿namespace Serwer {
     public class Rower {
-        private string _marka;
-        private string _model;
-        private int _rokProdukcji;
-        private double _cena;
-        private string _kolor;
-        private string _typ;
-
-        public Rower(string marka, string model, int rokProdukcji, double cena, string kolor, string typ) {
-            _marka = marka;
-            _model = model;
-            _rokProdukcji = rokProdukcji;
-            _cena = cena;
-            _kolor = kolor;
-            _typ = typ;
+        public long UID {
+            get; set;
         }
 
-        public string Marka {
-            get => _marka;
-            set => _marka = value;
+        public User Owner {
+            get; set;
+        }
+
+        public string Brand {
+            get; set;
         }
 
         public string Model {
-            get => _model;
-            set => _model = value;
+            get; set;
         }
 
-        public int RokProdukcji {
-            get => _rokProdukcji;
-            set => _rokProdukcji = value;
+        public string Type {
+            get; set;
         }
 
-        public double Cena {
-            get => _cena;
-            set => _cena = value;
+        public double Price {
+            get; set;
         }
 
-        public string Kolor {
-            get => _kolor;
-            set => _kolor = value;
+        public List<RowerStatus> Status {
+            get; set;
         }
 
-        public string Typ {
-            get => _typ;
-            set => _typ = value;
+        public Rower(long uid, User owner, string brand, string model, string type, double price, List<RowerStatus> status) {
+            UID = uid;
+            Owner = owner;
+            Brand = brand;
+            Model = model;
+            Type = type;
+            Price = price;
+            Status = status;
+        }
+        public Rower(User owner, string brand, string model, string type, double price, List<RowerStatus> status) {
+            UID = 0;
+            Owner = owner;
+            Brand = brand;
+            Model = model;
+            Type = type;
+            Price = price;
+            Status = status;
+        }
+    }
+
+    public class RowerStatus {
+        public long UID {
+            get; set;
         }
 
-        public override string ToString() {
-            return $"Marka: {_marka}, Model: {_model}, Rok produkcji: {_rokProdukcji}, Cena: {_cena}, Kolor: {_kolor}, Typ: {_typ}";
+        public User Changed_by {
+            get; set;
         }
+
+        public string Status {
+            get; set;
+        }
+
+        public RowerStatus(long uid, User changed_by, string status) {
+            UID = uid;
+            Changed_by = changed_by;
+            Status = status;
+        }
+        public RowerStatus(User changed_by, string status) {
+            UID = 0;
+            Changed_by = changed_by;
+            Status = status;
+        }
+    }
+
+    public class RowerDTO {
+        public string Brand {
+            get; set;
+        } = string.Empty;
+
+        public string Model {
+            get; set;
+        } = string.Empty;
+
+        public string Type {
+            get; set;
+        } = string.Empty;
+
+        public double Price {
+            get; set;
+        } = 0.0;
+    }
+
+    public class RowerStatusDTO {
+        public string Status {
+            get; set;
+        } = string.Empty;
+    }
+
+    public class RowerReturnable {
+        public long UID {
+            get; set;
+        } = 0;
+
+        public long OwnerUID {
+            get; set;
+        } = 0;
+
+        public string Brand {
+            get; set;
+        } = string.Empty;
+
+        public string Model {
+            get; set;
+        } = string.Empty;
+
+        public string Type {
+            get; set;
+        } = string.Empty;
+
+        public double Price {
+            get; set;
+        } = 0.0;
     }
 }

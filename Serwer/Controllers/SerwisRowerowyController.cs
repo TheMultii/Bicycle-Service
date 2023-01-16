@@ -257,8 +257,59 @@ namespace Serwer.Controllers {
             List<string> validStatuses = new() { "Zrealizowane", "Oczekujące", "W trakcie realizacji", "Nowe zamówienie" };
             if (!validStatuses.Contains(request.Status)) return BadRequest("Invalid status");
 
+            SqliteCommand command = _connection.CreateCommand();
+            command.CommandText = "SELECT status FROM OrderStatuses WHERE bicycle = @uid";
+            command.Parameters.AddWithValue("@uid", uid);
+            SqliteDataReader reader = command.ExecuteReader();
+            List<string> status = new();
+            while (reader.Read()) {
+                status.Add(reader.GetString(0));
+            }
+            status.Add(request.Status);
 
-            throw new NotImplementedException();
+            command = _connection.CreateCommand();
+            command.CommandText = "SELECT uid from Users WHERE name = @name";
+            command.Parameters.AddWithValue("@name", _userService.GetName());
+            reader = command.ExecuteReader();
+            if (reader.Read()) {
+                long user_uid = reader.GetInt64(0);
+
+                command = _connection.CreateCommand();
+                command.CommandText = "INSERT INTO OrderStatuses (uid, bicycle, changed_by, status) VALUES (@uid, @bicycle, @changed_by, @status)";
+                long status_uid = generator.CreateId();
+                command.Parameters.AddWithValue("@uid", status_uid);
+                command.Parameters.AddWithValue("@bicycle", uid);
+                command.Parameters.AddWithValue("@changed_by", user_uid);
+                command.Parameters.AddWithValue("@status", request.Status);
+                command.ExecuteNonQuery();
+
+                string brand, model, type;
+                double price;
+                command = _connection.CreateCommand();
+                command.CommandText = "SELECT brand, model, type, price FROM Bicycles WHERE uid = @uid";
+                command.Parameters.AddWithValue("@uid", uid);
+                reader = command.ExecuteReader();
+                if (reader.Read()) {
+                    brand = reader.GetString(0);
+                    model = reader.GetString(1);
+                    type = reader.GetString(2);
+                    price = reader.GetDouble(3);
+                } else {
+                    return NotFound();
+                }
+
+
+                RowerReturnable returnable = new() {
+                    UID = uid,
+                    Brand = brand,
+                    Model = model,
+                    Type = type,
+                    Price = price,
+                    Status = status
+                };
+                return Ok(returnable);
+            }
+            return NotFound();
         }
 
         /// <summary>

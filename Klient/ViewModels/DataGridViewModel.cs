@@ -17,8 +17,6 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
         set => SetProperty(ref _token, value);
     }
 
-    public bool test = false;
-
     private bool _isLoading = false;
     public bool IsLoading {
         get => _isLoading;
@@ -29,9 +27,13 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
 
     public DataGridViewModel() {
         try {
-            using BinaryReader reader = new(new FileStream("token.bin", FileMode.Open, FileAccess.ReadWrite));
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "token.bin");
+            using BinaryReader reader = new(new FileStream(path, FileMode.Open, FileAccess.ReadWrite));
             _token = reader.ReadString();
             Core.Client.Configuration.Default.BasePath = "https://localhost:7050/";
+            if (Core.Client.Configuration.Default.DefaultHeader.ContainsKey("Authorization")) {
+                Core.Client.Configuration.Default.DefaultHeader.Remove("Authorization");
+            }
             Core.Client.Configuration.Default.DefaultHeader.Add("Authorization", "Bearer " + _token);
         } catch (Exception) { }
     }

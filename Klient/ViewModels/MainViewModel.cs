@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Klient.Core.Api;
 using Klient.Core.Model;
+using Newtonsoft.Json;
 
 namespace Klient.ViewModels;
 
@@ -13,6 +14,17 @@ public class MainViewModel : ObservableRecipient {
         get => _isLoading;
         set => SetProperty(ref _isLoading, value);
     }
+
+    private UserMyDataDTO? _userDataDTO = null;
+    public UserMyDataDTO? UserDataDTO {
+        get => _userDataDTO;
+        set => SetProperty(ref _userDataDTO, value);
+    }
+
+    //paths
+    private string tokenPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "token.bin");
+    private string tokenExpirePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tokenExpire.bin");
+    private string myDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "myData.json");
 
     //login section
     private string _login = string.Empty;
@@ -81,8 +93,16 @@ public class MainViewModel : ObservableRecipient {
 
     public MainViewModel() {
         try {
-            using BinaryReader reader = new(new FileStream("token.bin", FileMode.Open, FileAccess.ReadWrite));
+            using BinaryReader reader = new(new FileStream(tokenPath, FileMode.Open, FileAccess.ReadWrite));
             Token = reader.ReadString();
+
+            using BinaryReader reader2 = new(new FileStream(tokenExpirePath, FileMode.Open, FileAccess.ReadWrite));
+            TokenExpireDate = DateTime.Parse(reader2.ReadString());
+            TokenExpireDateString = $"Twój token wygaśnie {TokenExpireDate:dd.MM.yyyy HH:mm:ss}.";
+
+            using StreamReader reader3 = new(new FileStream(myDataPath, FileMode.Open, FileAccess.ReadWrite));
+            UserDataDTO = JsonConvert.DeserializeObject<UserMyDataDTO?>(reader3.ReadToEnd());
+
         } catch (Exception) { }
     }
 
@@ -150,13 +170,35 @@ public class MainViewModel : ObservableRecipient {
             string _token_response = await userApi.ApiUserLoginPostAsync(userLoginDTO);
             if (_token_response != null) {
                 Token = _token_response.Replace("\"", string.Empty);
-                TokenExpireDateString = $"Twój token wygaśnie {DateTime.Now.AddDays(1):dd.MM.yyyy HH:mm:ss}.";
+                DateTime tomorrow = DateTime.Now.AddDays(1);
+                TokenExpireDateString = $"Twój token wygaśnie {tomorrow:dd.MM.yyyy HH:mm:ss}.";
+                TokenExpireDate = DateTime.Now.AddDays(1);
                 vm.Login = "";
                 vm.Password = "";
+                
+                if (Core.Client.Configuration.Default.DefaultHeader.ContainsKey("Authorization")) {
+                    Core.Client.Configuration.Default.DefaultHeader.Remove("Authorization");
+                }
+                Core.Client.Configuration.Default.DefaultHeader.Add("Authorization", $"Bearer {Token}");
+                UserMyDataDTO myData = await userApi.ApiUserInfoGetAsync();
+                UserDataDTO = myData;
+                string myDataJSON = JsonConvert.SerializeObject(myData);
 
-                //save token to binary file token.bin using binarystream
-                using BinaryWriter writer = new(new FileStream("token.bin", FileMode.Create, FileAccess.ReadWrite));
+                var fs = new FileStream(tokenPath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                var fs2 = new FileStream(tokenExpirePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                using FileStream fs3 = new FileStream(myDataPath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+
+                using BinaryWriter writer = new(fs);
+                using BinaryWriter writer2 = new(fs2);
+                using StreamWriter writer3 = new(fs3);
+
                 writer.Write(Token);
+                writer2.Write(tomorrow.ToString("dd.MM.yyyy HH:mm:ss"));
+                
+                if(myData != null) {
+                    await writer3.WriteAsync(myDataJSON);
+                }
+
                 IsLoading = false;
             }
         } catch (Exception) {
@@ -164,12 +206,13 @@ public class MainViewModel : ObservableRecipient {
         }
         IsLoading = false;
     }
-
-    internal static void LogoutButtonClick(object sender, RoutedEventArgs e, MainViewModel vm) {
+    
+    internal void LogoutButtonClick(object sender, RoutedEventArgs e, MainViewModel vm) {
         vm.Token = string.Empty;
         vm.TokenExpireDate = DateTime.MinValue;
         vm.TokenExpireDateString = "";
         
-        File.Delete("token.bin");
+        File.Delete(tokenPath);
+        File.Delete(tokenExpirePath);
     }
 }

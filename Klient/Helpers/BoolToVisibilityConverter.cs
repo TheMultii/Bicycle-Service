@@ -1,15 +1,16 @@
-﻿using Microsoft.UI.Xaml.Data;
+﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Data;
 
 namespace Klient.Helpers;
 
-public class BoolToLoadingMarginConverter : IValueConverter {
+public class BoolToVisibilityConverter : IValueConverter {
 
     public object Convert(object value, Type targetType, object parameter, string language) {
         if (value is bool b) {
             if (parameter != null) {
-                return b ? "0 3 0 0" : "0 0 0 0";
+                return b ? Visibility.Collapsed : Visibility.Visible;
             }
-            return b ? "0 0 0 0" : "0 3 0 0";
+            return b ? Visibility.Visible : Visibility.Collapsed;
         }
 
         throw new ArgumentException("");

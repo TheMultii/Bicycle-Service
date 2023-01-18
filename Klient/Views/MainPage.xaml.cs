@@ -25,6 +25,6 @@ public sealed partial class MainPage : Page {
     }
 
     private void LogoutButtonClick(object sender, RoutedEventArgs e) {
-        MainViewModel.LogoutButtonClick(sender, e, ViewModel);
+        ViewModel.LogoutButtonClick(sender, e, ViewModel);
     }
 }

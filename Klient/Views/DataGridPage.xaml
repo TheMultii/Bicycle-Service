@@ -5,26 +5,32 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:lcl="using:Klient.Helpers"
     mc:Ignorable="d">
+    <Page.Resources>
+        <ResourceDictionary>
+            <lcl:BoolToVisibilityConverter x:Key="boolToVisibilityConverter" />
+        </ResourceDictionary>
+    </Page.Resources>
 
     <Grid x:Name="ContentArea">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        
+
         <controls:DataGrid
             Grid.Row="0"
             AutoGenerateColumns="False"
             IsReadOnly="True"
             GridLinesVisibility="Horizontal"
+            Visibility="{Binding IsLoading, ConverterParameter='False', Converter={StaticResource boolToVisibilityConverter}}"
             ItemsSource="{x:Bind ViewModel.Source, Mode=OneWay}">
             <controls:DataGrid.Resources>
                 <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
             </controls:DataGrid.Resources>
             <controls:DataGrid.Columns>
                 <controls:DataGridTextColumn Binding="{Binding Uid}" Header="UID Zamówienia" />
-                <!--<controls:DataGridTextColumn Binding="{Binding OwnerUID}" Header="OwnerUID" />-->
                 <controls:DataGridTextColumn Binding="{Binding Brand}" Header="Brand" />
                 <controls:DataGridTextColumn Binding="{Binding Model}" Header="Model" />
                 <controls:DataGridTextColumn Binding="{Binding Type}" Header="Typ" />
@@ -34,7 +40,7 @@
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 
-        <ProgressRing Grid.Row="1" IsActive="True" Visibility="{Binding Token, Converter={StaticResource stringEmptyToVisibilityConverter}}" />
+        <ProgressRing Grid.Row="1" IsActive="True" Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
 
     </Grid>
 </Page>

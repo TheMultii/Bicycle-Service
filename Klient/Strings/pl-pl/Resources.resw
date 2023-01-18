@@ -118,16 +118,16 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AppDisplayName" xml:space="preserve">
-    <value>Bicycle Service Client</value>
+    <value>Klient Serwisu Rowerowego</value>
   </data>
   <data name="AppDescription" xml:space="preserve">
-    <value>Bicycle Service Client</value>
+    <value>Klient Serwisu Rowerowego</value>
   </data>
   <data name="Shell_Main.Content" xml:space="preserve">
-    <value>Log in</value>
+    <value>Logowanie</value>
   </data>
   <data name="ListDetails_NoSelection.Text" xml:space="preserve">
-    <value>Select an item from the list.</value>
+    <value>Wybierz element z listy</value>
   </data>
   <data name="Shell_ListDetails.Content" xml:space="preserve">
     <value>ListDetails</value>
@@ -136,64 +136,64 @@
     <value>ContentGrid</value>
   </data>
   <data name="WebView_Loading.Text" xml:space="preserve">
-    <value>Loading...</value>
+    <value>Ładowanie</value>
   </data>
   <data name="WebView_FailedMessage.Text" xml:space="preserve">
-    <value>Page failed to load. Check connection and reload.</value>
+    <value>Nie udało się załadować strony. Sprawdź połączenie i spróbuj załadować ponownie.</value>
   </data>
   <data name="BrowserBackButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
-    <value>Browser back</value>
+    <value>Przejdź wstecz</value>
   </data>
   <data name="BrowserBackButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Browser back</value>
+    <value>Przejdź wstecz</value>
   </data>
   <data name="BrowserForwardButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
-    <value>Browser forward</value>
+    <value>Przejdź do przodu</value>
   </data>
   <data name="BrowserForwardButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Browser forward</value>
+    <value>Przejdź do przodu</value>
   </data>
   <data name="WebView_Reload.Content" xml:space="preserve">
-    <value>Reload</value>
+    <value>Odśwież</value>
   </data>
   <data name="ReloadButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
-    <value>Reload</value>
+    <value>Odśwież</value>
   </data>
   <data name="ReloadButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Reload</value>
+    <value>Odśwież</value>
   </data>
   <data name="OpenInBrowserButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
-    <value>Open in browser</value>
+    <value>Otwórz w przeglądarce</value>
   </data>
   <data name="OpenInBrowserButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Open in browser</value>
+    <value>Otwórz w przeglądarce</value>
   </data>
   <data name="Shell_WebView.Content" xml:space="preserve">
     <value>WebView</value>
   </data>
   <data name="Shell_DataGrid.Content" xml:space="preserve">
-    <value>Orders</value>
+    <value>Zamówienia</value>
   </data>
   <data name="Settings_Personalization.Text" xml:space="preserve">
-    <value>Personalization</value>
+    <value>Personalizacja</value>
   </data>
   <data name="Settings_Theme.Text" xml:space="preserve">
-    <value>Theme</value>
+    <value>Motyw</value>
   </data>
   <data name="Settings_Theme_Light.Content" xml:space="preserve">
-    <value>Light</value>
+    <value>Jasny</value>
   </data>
   <data name="Settings_Theme_Dark.Content" xml:space="preserve">
-    <value>Dark</value>
+    <value>Ciemny</value>
   </data>
   <data name="Settings_Theme_Default.Content" xml:space="preserve">
-    <value>Default</value>
+    <value>Domyślny</value>
   </data>
   <data name="Settings_About.Text" xml:space="preserve">
-    <value>About this application</value>
+    <value>O aplikacji</value>
   </data>
   <data name="Settings_AboutDescription.Text" xml:space="preserve">
-    <value>Client, written in WinUI 3, that allows store and warehouse employees (Warehousemen and Salesmen) to confirm the availability and assembly of bikes for customers and the sale of bikes.</value>
+    <value>Klient, napisany w WinUI 3, który pozwala pracownikom sklepu i magazynu (Magazynierom i Sprzedawcom) potwierdzać dostępność i montaż rowerów dla klientów oraz umożliwia sprzedaż rowerów klientom.</value>
   </data>
   <data name="SettingsPage_PrivacyTermsLink.Content" xml:space="preserve">
     <value>GitHub Code</value>

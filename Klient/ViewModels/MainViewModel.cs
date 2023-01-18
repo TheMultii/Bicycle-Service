@@ -52,7 +52,33 @@ public class MainViewModel : ObservableRecipient {
         set => SetProperty(ref _register_password_confirm, value);
     }
 
+    // token
+    private string _token = string.Empty;
+    public string Token {
+        get => _token;
+        set => SetProperty(ref _token, value);
+    }
+
+    public DateTime _tokenExpireDate = DateTime.MinValue;
+    public DateTime TokenExpireDate {
+        get => _tokenExpireDate;
+        set => SetProperty(ref _tokenExpireDate, value);
+    }
+
+    private string _tokenExpireDateString = "";
+    public string TokenExpireDateString {
+        get => _tokenExpireDateString;
+        set => SetProperty(ref _tokenExpireDateString, value);
+    }
+
     //methods
+
+    public MainViewModel() {
+        try {
+            using BinaryReader reader = new(new FileStream("token.bin", FileMode.Open, FileAccess.ReadWrite));
+            Token = reader.ReadString();
+        } catch (Exception) { }
+    }
 
     private static async Task<ContentDialogResult> DisplayError(object sender, string errorMessage, string errorTitle = "Błąd", string errorButtonText = "OK") {
         ContentDialog dialog = new() {
@@ -67,7 +93,7 @@ public class MainViewModel : ObservableRecipient {
         return await dialog.ShowAsync();
     }
 
-    internal async void RegisterButtonClick(object sender, RoutedEventArgs e) {
+    internal async void RegisterButtonClick(object sender, RoutedEventArgs e, MainViewModel vm) {
         string errorMessage = string.Empty;
         bool displayError = false;
 
@@ -82,9 +108,15 @@ public class MainViewModel : ObservableRecipient {
             await DisplayError(sender, errorMessage);
             return;
         }
+
+        vm.RegisterLogin = "";
+        vm.RegisterName = "";
+        vm.RegisterSurname = "";
+        vm.RegisterPassword = "";
+        vm.RegisterPasswordConfirm = "";
     }
 
-    internal async void LoginButtonClick(object sender, RoutedEventArgs e) {
+    internal async void LoginButtonClick(object sender, RoutedEventArgs e, MainViewModel vm) {
         string errorMessage = string.Empty;
         bool displayError = false;
 
@@ -102,35 +134,28 @@ public class MainViewModel : ObservableRecipient {
         }
 
         Core.Client.Configuration.Default.BasePath = "https://localhost:7050/";
-        Core.Client.Configuration.Default.AddDefaultHeader("Authorization", "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEwNjQxODY5MDg3MDEwOTc5ODQiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiVGhlTXVsdGlpIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ3VzdG9tZXIiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL2V4cGlyYXRpb24iOiIxNy4wMS4yMDIzIDIxOjA3OjI4IiwiZXhwIjoxNjczOTg2MDQ4fQ.EY45_xlQFztSdoXWFTn6LOtTFBhpFxMI0CDc2fqPYQ6vXFdWSI-RTL5OdE05nCC9XltqXgq970Ale63xWLD97w");
         IUserApi userApi = new UserApi();
-        ISerwisRowerowyApi serwisRowerowyApi = new SerwisRowerowyApi();
-        string str_res = await userApi.ApiUserTestGetAsync();
-        List<RowerReturnable> kek = await serwisRowerowyApi.MyOrdersGetAsync();
-        str_res = str_res + " " + kek.Count;
+        UserLoginDTO userLoginDTO = new() { Username = _login, Password = _password };
+        try {
+            string _token_response = await userApi.ApiUserLoginPostAsync(userLoginDTO);
+            if (_token_response != null) {
+                Token = _token_response.Replace("\"", string.Empty);
+                TokenExpireDateString = $"Twój token wygaśnie {DateTime.Now.AddDays(1).ToString("dd.MM.yyyy HH:mm:ss")}.";
+                vm.Login = "";
+                vm.Password = "";
 
-
-        ContentDialog dialog2 = new() {
-            XamlRoot = ((Button)sender).XamlRoot,
-            Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-            Title = "Pytańsko",
-            Content = str_res,
-            PrimaryButtonText = "Tak",
-            DefaultButton = ContentDialogButton.Primary
-        };
-
-        var result2 = await dialog2.ShowAsync();
-
-        //if (result == ContentDialogResult.Primary) {
-        //    dialog.Content = "Kliknięto: Tak";
-        //} else if (result == ContentDialogResult.Secondary) {
-        //    dialog.Content = "Kliknięto: Nie";
-        //} else {
-        //    dialog.Content = "Kliknięto: Muszę sprawdzić";
-        //}
-
-        //await dialog.ShowAsync();
-
+                //save token to binary file token.bin using binarystream
+                using BinaryWriter writer = new(new FileStream("token.bin", FileMode.Create, FileAccess.ReadWrite));
+                writer.Write(Token);
+            }
+        } catch (Exception) {
+            await DisplayError(sender, "Niepoprawne dane");
+        }
     }
 
+    internal static void LogoutButtonClick(object sender, RoutedEventArgs e, MainViewModel vm) {
+        vm.Token = string.Empty;
+        vm.TokenExpireDate = DateTime.MinValue;
+        vm.TokenExpireDateString = "";
+    }
 }

@@ -4,16 +4,15 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace Klient.Views;
 
-public sealed partial class ContentGridPage : Page
-{
-    public ContentGridViewModel ViewModel
-    {
+public sealed partial class ContentGridPage : Page {
+
+    public ContentGridViewModel ViewModel {
         get;
     }
 
-    public ContentGridPage()
-    {
+    public ContentGridPage() {
         ViewModel = App.GetService<ContentGridViewModel>();
         InitializeComponent();
+        DataContext = ViewModel;
     }
 }

@@ -15,8 +15,8 @@
     Version="1.0.0.0" />
 
   <Properties>
-    <DisplayName>Klient</DisplayName>
-    <PublisherDisplayName>Marcel</PublisherDisplayName>
+    <DisplayName>Klient Serwisu Rowerowego</DisplayName>
+    <PublisherDisplayName>Marcel Gańczarczyk</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 

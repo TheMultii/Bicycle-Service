@@ -8,6 +8,12 @@ namespace Klient.ViewModels;
 
 public class MainViewModel : ObservableRecipient {
 
+    private bool _isLoading = false;
+    public bool IsLoading {
+        get => _isLoading;
+        set => SetProperty(ref _isLoading, value);
+    }
+
     //login section
     private string _login = string.Empty;
     public string Login {
@@ -108,12 +114,15 @@ public class MainViewModel : ObservableRecipient {
             await DisplayError(sender, errorMessage);
             return;
         }
+        IsLoading = true;
 
         vm.RegisterLogin = "";
         vm.RegisterName = "";
         vm.RegisterSurname = "";
         vm.RegisterPassword = "";
         vm.RegisterPasswordConfirm = "";
+
+        IsLoading = false;
     }
 
     internal async void LoginButtonClick(object sender, RoutedEventArgs e, MainViewModel vm) {
@@ -133,6 +142,7 @@ public class MainViewModel : ObservableRecipient {
             return;
         }
 
+        IsLoading = true;
         Core.Client.Configuration.Default.BasePath = "https://localhost:7050/";
         IUserApi userApi = new UserApi();
         UserLoginDTO userLoginDTO = new() { Username = _login, Password = _password };
@@ -140,22 +150,26 @@ public class MainViewModel : ObservableRecipient {
             string _token_response = await userApi.ApiUserLoginPostAsync(userLoginDTO);
             if (_token_response != null) {
                 Token = _token_response.Replace("\"", string.Empty);
-                TokenExpireDateString = $"Twój token wygaśnie {DateTime.Now.AddDays(1).ToString("dd.MM.yyyy HH:mm:ss")}.";
+                TokenExpireDateString = $"Twój token wygaśnie {DateTime.Now.AddDays(1):dd.MM.yyyy HH:mm:ss}.";
                 vm.Login = "";
                 vm.Password = "";
 
                 //save token to binary file token.bin using binarystream
                 using BinaryWriter writer = new(new FileStream("token.bin", FileMode.Create, FileAccess.ReadWrite));
                 writer.Write(Token);
+                IsLoading = false;
             }
         } catch (Exception) {
             await DisplayError(sender, "Niepoprawne dane");
         }
+        IsLoading = false;
     }
 
     internal static void LogoutButtonClick(object sender, RoutedEventArgs e, MainViewModel vm) {
         vm.Token = string.Empty;
         vm.TokenExpireDate = DateTime.MinValue;
         vm.TokenExpireDateString = "";
+        
+        File.Delete("token.bin");
     }
 }

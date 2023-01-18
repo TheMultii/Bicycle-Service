@@ -212,4 +212,7 @@
   &lt;/visual&gt;
 &lt;/toast&gt;</value>
   </data>
+  <data name="DataGridPage_Refresh.Content" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
 </root>

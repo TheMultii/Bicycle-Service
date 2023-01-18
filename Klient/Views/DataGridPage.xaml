@@ -17,10 +17,13 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
+        <Button Margin="0 0 0 10" Visibility="{Binding IsLoading, ConverterParameter='False', Converter={StaticResource boolToVisibilityConverter}}" x:Uid="DataGridPage_Refresh" HorizontalAlignment="Right" Grid.Row="0"  Click="RefreshData" />
+
         <controls:DataGrid
-            Grid.Row="0"
+            Grid.Row="1"
             AutoGenerateColumns="False"
             IsReadOnly="True"
             GridLinesVisibility="Horizontal"
@@ -40,7 +43,7 @@
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 
-        <ProgressRing Grid.Row="1" IsActive="True" Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
+        <ProgressRing Grid.Row="2" IsActive="True" Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
 
     </Grid>
 </Page>

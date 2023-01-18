@@ -19,4 +19,8 @@ public sealed partial class DataGridPage : Page
         InitializeComponent();
         DataContext = ViewModel;
     }
+
+    private void RefreshData(object sender, Microsoft.UI.Xaml.RoutedEventArgs e) {
+        ViewModel.RefreshData(sender, e, ViewModel);
+    }
 }

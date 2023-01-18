@@ -5,6 +5,7 @@ using Klient.Contracts.ViewModels;
 using Klient.Core.Api;
 using Klient.Core.Model;
 using Klient.Core.Models;
+using Microsoft.UI.Xaml;
 using Newtonsoft.Json.Linq;
 
 namespace Klient.ViewModels;
@@ -39,17 +40,7 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
     }
 
     public async void OnNavigatedTo(object parameter) {
-        Source.Clear();
-
-        if (_token == string.Empty) return;
-        IsLoading = true;
-
-        IEnumerable<RowerReturnable> data = await GetUserRowery();
-
-        foreach (var item in data) {
-            Source.Add(item);
-        }
-        IsLoading = false;
+        await GetUserRoweryMethod();
     }
 
     private async Task<IEnumerable<RowerReturnableExtended>> GetUserRowery() {
@@ -73,6 +64,24 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
             //
         }
         return new List<RowerReturnableExtended>();
+    }
+
+    private async Task GetUserRoweryMethod() {
+        Source.Clear();
+
+        if (_token == string.Empty) return;
+        IsLoading = true;
+
+        IEnumerable<RowerReturnable> data = await GetUserRowery();
+
+        foreach (var item in data) {
+            Source.Add(item);
+        }
+        IsLoading = false;
+    }
+
+    internal async void RefreshData(object sender, RoutedEventArgs e, DataGridViewModel vm) {
+        await GetUserRoweryMethod();
     }
 
     public void OnNavigatedFrom() {

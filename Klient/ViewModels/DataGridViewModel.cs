@@ -33,6 +33,12 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
         set => SetProperty(ref _isPlacingAnOrder, value);
     }
 
+    private bool _isOrderBeingSendToServer = false;
+    public bool IsOrderBeingSendToServer {
+        get => _isOrderBeingSendToServer;
+        set => SetProperty(ref _isOrderBeingSendToServer, value);
+    }
+
     private bool _allowPlacingAnOrder = false;
     public bool AllowPlacingAnOrder {
         get => _allowPlacingAnOrder;
@@ -155,10 +161,12 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
 
     internal void MakeAnOrderCancel(object sender, RoutedEventArgs e) {
         IsPlacingAnOrder = false;
+        IsOrderBeingSendToServer = false;
     }
 
     internal void MakeAnOrderSubmit(object sender, RoutedEventArgs e) {
         if (!AllowPlacingAnOrder) return;
+        IsOrderBeingSendToServer = !IsOrderBeingSendToServer;
     }
     
     internal void MakeOnOrderComboBox_SelectionChanged(object sender, RoutedEventArgs e) {

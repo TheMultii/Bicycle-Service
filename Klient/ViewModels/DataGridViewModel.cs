@@ -5,13 +5,15 @@ using Klient.Core.Api;
 using Klient.Core.Model;
 using Klient.Core.Models;
 using Microsoft.UI.Xaml;
+using Newtonsoft.Json;
 
 namespace Klient.ViewModels;
 
 public class DataGridViewModel : ObservableRecipient, INavigationAware {
     
     private static readonly string tokenPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "token.bin");
-    
+    private static readonly string myDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "myData.json");
+
     private string _token = string.Empty;
     public string Token {
         get => _token;
@@ -24,9 +26,22 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
         set => SetProperty(ref _isLoading, value);
     }
 
+    private UserMyDataDTO? _userDataDTO = null;
+    public UserMyDataDTO? UserDataDTO {
+        get => _userDataDTO;
+        set => SetProperty(ref _userDataDTO, value);
+    }
+
     public ObservableCollection<RowerReturnable> Source { get; } = new();
 
     public DataGridViewModel() {
+        try {
+            using StreamReader reader3 = new(new FileStream(myDataPath, FileMode.Open, FileAccess.ReadWrite));
+            UserDataDTO = JsonConvert.DeserializeObject<UserMyDataDTO?>(reader3.ReadToEnd());
+        } catch (Exception) {
+            UserDataDTO = null;
+        }
+        if (UserDataDTO == null) return;
         try {
             using BinaryReader reader = new(new FileStream(tokenPath, FileMode.Open, FileAccess.ReadWrite));
             _token = reader.ReadString();
@@ -67,6 +82,9 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
 
     private async Task GetUserRoweryMethod() {
         if (Token == string.Empty) return;
+        if (UserDataDTO == null) return;
+        if (UserDataDTO.Permission != "Customer") return;
+        
         Source.Clear();
 
         if (_token == string.Empty) return;

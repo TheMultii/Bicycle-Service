@@ -81,6 +81,12 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
         }
     }
 
+    private double _newOrderPrice = 0;
+    public double NewOrderPrice {
+        get => _newOrderPrice;
+        set => SetProperty(ref _newOrderPrice, value);
+    }
+
     private UserMyDataDTO? _userDataDTO = null;
     public UserMyDataDTO? UserDataDTO {
         get => _userDataDTO;
@@ -111,8 +117,8 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
     public async void OnNavigatedTo(object parameter) => await GetUserRoweryMethod();
 
     private static async Task<IEnumerable<RowerReturnableExtended>> GetUserRowery() {
-        ISerwisRowerowyApi serwisRowerowyApi = new SerwisRowerowyApi();
         try {
+            ISerwisRowerowyApi serwisRowerowyApi = new SerwisRowerowyApi();
             List<RowerReturnable> rowery = await serwisRowerowyApi.MyOrdersGetAsync();
             List<RowerReturnableExtended> roweryExtended = new();
             foreach (var rower in rowery) {
@@ -121,7 +127,7 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
                     OwnerUID = rower.OwnerUID,
                     Brand = rower.Brand,
                     Model = rower.Model,
-                    Type = rower.Type,
+                    Type = Capitalize(rower.Type),
                     Price = rower.Price,
                     Status = rower.Status
                 });
@@ -129,6 +135,20 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
             return roweryExtended;
         } catch (Exception) { }
         return new List<RowerReturnableExtended>();
+    }
+
+    private static string Capitalize(string str) {
+        if (string.IsNullOrEmpty(str)) return str;
+        string[] words = str.Split(' ');
+        for (int i = 0; i < words.Length; i++) {
+            string word = words[i];
+            if (word.Length > 1) {
+                words[i] = char.ToUpper(word[0]) + word.Substring(1);
+            } else {
+                words[i] = word.ToUpper();
+            }
+        }
+        return string.Join(" ", words);
     }
 
     private async Task GetUserRoweryMethod() {
@@ -141,7 +161,7 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
         if (_token == string.Empty) return;
         IsLoading = true;
 
-        IEnumerable<RowerReturnable> data = await GetUserRowery();
+        IEnumerable<RowerReturnable> data = (await GetUserRowery()).Reverse();
 
         foreach (var item in data) {
             Source.Add(item);
@@ -151,24 +171,43 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
 
     internal async void RefreshData(object sender, RoutedEventArgs e) => await GetUserRoweryMethod();
 
-    internal void MakeAnOrder(object sender, RoutedEventArgs e) {
-        IsPlacingAnOrder = true;
-    }
+    internal void MakeAnOrder(object sender, RoutedEventArgs e) => IsPlacingAnOrder = true;
 
     internal void MakeAnOrderCancel(object sender, RoutedEventArgs e) {
         IsPlacingAnOrder = false;
         IsOrderBeingSendToServer = false;
     }
 
-    internal void MakeAnOrderSubmit(object sender, RoutedEventArgs e) {
+    internal async void MakeAnOrderSubmit(object sender, RoutedEventArgs e) {
         if (!AllowPlacingAnOrder) return;
-        IsOrderBeingSendToServer = !IsOrderBeingSendToServer;
+        IsOrderBeingSendToServer = true;
+
+        try {
+            ISerwisRowerowyApi serwisRowerowyApi = new SerwisRowerowyApi();
+
+            await serwisRowerowyApi.ApiServiceBicyclePostAsync(new RowerDTO {
+                Brand = NewOrderBrand,
+                Model = NewOrderModel,
+                Type = NewOrderType,
+                Price = NewOrderPrice,
+            });
+        } catch (Exception) { }
+
+        IsPlacingAnOrder = false;
+        AllowPlacingAnOrder = false;
+        NewOrderBrand = string.Empty;
+        NewOrderModel = string.Empty;
+        NewOrderType = string.Empty;
+        NewOrderChecked = false;
+        IsOrderBeingSendToServer = false;
+        await GetUserRoweryMethod();
     }
     
     internal void MakeOnOrderComboBox_SelectionChanged(object sender, RoutedEventArgs e) {
         if (sender is ComboBox comboBox) {
             if (comboBox.SelectedValue != null) {
                 NewOrderType = comboBox.SelectedValue.ToString() ?? "";
+                NewOrderType = NewOrderType.ToLower();
             }
         }
     }
@@ -183,6 +222,10 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
             AllowPlacingAnOrder = false;
             return;
         }
+        
+        Random r = new();
+        NewOrderPrice = Math.Round((r.NextDouble() * 1000), 2);
+        
         AllowPlacingAnOrder = true;
     }
 

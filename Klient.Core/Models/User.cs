@@ -34,17 +34,13 @@ namespace Klient.Core.Model
         /// </summary>
         /// <param name="uid">uid.</param>
         /// <param name="login">login.</param>
-        /// <param name="passwordHash">passwordHash.</param>
-        /// <param name="passwordSalt">passwordSalt.</param>
         /// <param name="name">name.</param>
         /// <param name="surname">surname.</param>
         /// <param name="accountType">accountType.</param>
-        public User(string uid = default(string), string login = default(string), byte[] passwordHash = default(byte[]), byte[] passwordSalt = default(byte[]), string name = default(string), string surname = default(string), string accountType = default(string))
+        public User(string uid = default(string), string login = default(string), string name = default(string), string surname = default(string), string accountType = default(string))
         {
             this.Uid = uid;
             this.Login = login;
-            this.PasswordHash = passwordHash;
-            this.PasswordSalt = passwordSalt;
             this.Name = name;
             this.Surname = surname;
             this.AccountType = accountType;
@@ -61,18 +57,6 @@ namespace Klient.Core.Model
         /// </summary>
         [DataMember(Name="login", EmitDefaultValue=false)]
         public string Login { get; set; }
-
-        /// <summary>
-        /// Gets or Sets PasswordHash
-        /// </summary>
-        [DataMember(Name="passwordHash", EmitDefaultValue=false)]
-        public byte[] PasswordHash { get; set; }
-
-        /// <summary>
-        /// Gets or Sets PasswordSalt
-        /// </summary>
-        [DataMember(Name="passwordSalt", EmitDefaultValue=false)]
-        public byte[] PasswordSalt { get; set; }
 
         /// <summary>
         /// Gets or Sets Name
@@ -102,8 +86,6 @@ namespace Klient.Core.Model
             sb.Append("class User {\n");
             sb.Append("  Uid: ").Append(Uid).Append("\n");
             sb.Append("  Login: ").Append(Login).Append("\n");
-            sb.Append("  PasswordHash: ").Append(PasswordHash).Append("\n");
-            sb.Append("  PasswordSalt: ").Append(PasswordSalt).Append("\n");
             sb.Append("  Name: ").Append(Name).Append("\n");
             sb.Append("  Surname: ").Append(Surname).Append("\n");
             sb.Append("  AccountType: ").Append(AccountType).Append("\n");
@@ -152,16 +134,6 @@ namespace Klient.Core.Model
                     this.Login.Equals(input.Login))
                 ) && 
                 (
-                    this.PasswordHash == input.PasswordHash ||
-                    (this.PasswordHash != null &&
-                    this.PasswordHash.Equals(input.PasswordHash))
-                ) && 
-                (
-                    this.PasswordSalt == input.PasswordSalt ||
-                    (this.PasswordSalt != null &&
-                    this.PasswordSalt.Equals(input.PasswordSalt))
-                ) && 
-                (
                     this.Name == input.Name ||
                     (this.Name != null &&
                     this.Name.Equals(input.Name))
@@ -191,10 +163,6 @@ namespace Klient.Core.Model
                     hashCode = hashCode * 59 + this.Uid.GetHashCode();
                 if (this.Login != null)
                     hashCode = hashCode * 59 + this.Login.GetHashCode();
-                if (this.PasswordHash != null)
-                    hashCode = hashCode * 59 + this.PasswordHash.GetHashCode();
-                if (this.PasswordSalt != null)
-                    hashCode = hashCode * 59 + this.PasswordSalt.GetHashCode();
                 if (this.Name != null)
                     hashCode = hashCode * 59 + this.Name.GetHashCode();
                 if (this.Surname != null)

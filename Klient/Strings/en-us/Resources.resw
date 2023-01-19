@@ -218,4 +218,10 @@
   <data name="DataGridPage_Add.Content" xml:space="preserve">
     <value>Make an order</value>
   </data>
+  <data name="DataGridPage_Back.Content" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="DataGridPage_CreateAnOrder.Content" xml:space="preserve">
+    <value>Place an order</value>
+  </data>
 </root>

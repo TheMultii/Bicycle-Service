@@ -5,6 +5,7 @@ using Klient.Core.Api;
 using Klient.Core.Model;
 using Klient.Core.Models;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json;
 
 namespace Klient.ViewModels;
@@ -24,6 +25,54 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
     public bool IsLoading {
         get => _isLoading;
         set => SetProperty(ref _isLoading, value);
+    }
+
+    private bool _isPlacingAnOrder = false;
+    public bool IsPlacingAnOrder {
+        get => _isPlacingAnOrder;
+        set => SetProperty(ref _isPlacingAnOrder, value);
+    }
+
+    private bool _allowPlacingAnOrder = false;
+    public bool AllowPlacingAnOrder {
+        get => _allowPlacingAnOrder;
+        set => SetProperty(ref _allowPlacingAnOrder, value);
+    }
+
+    private string _newOrderBrand = string.Empty;
+    public string NewOrderBrand {
+        get => _newOrderBrand;
+        set {
+            SetProperty(ref _newOrderBrand, value);
+            CheckIfAllowedToPlaceAnOrder();
+        }
+    }
+
+    private string _newOrderModel = string.Empty;
+    public string NewOrderModel {
+        get => _newOrderModel;
+        set {
+            SetProperty(ref _newOrderModel, value);
+            CheckIfAllowedToPlaceAnOrder();
+        }
+    }
+
+    private string _newOrderType = string.Empty;
+    public string NewOrderType {
+        get => _newOrderType;
+        set {
+            SetProperty(ref _newOrderType, value);
+            CheckIfAllowedToPlaceAnOrder();
+        }
+    }
+
+    private bool _newOrderChecked = false;
+    public bool NewOrderChecked {
+        get => _newOrderChecked;
+        set {
+            SetProperty(ref _newOrderChecked, value);
+            CheckIfAllowedToPlaceAnOrder();
+        }
     }
 
     private UserMyDataDTO? _userDataDTO = null;
@@ -57,7 +106,7 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
         await GetUserRoweryMethod();
     }
 
-    private async Task<IEnumerable<RowerReturnableExtended>> GetUserRowery() {
+    private static async Task<IEnumerable<RowerReturnableExtended>> GetUserRowery() {
         ISerwisRowerowyApi serwisRowerowyApi = new SerwisRowerowyApi();
         try {
             List<RowerReturnable> rowery = await serwisRowerowyApi.MyOrdersGetAsync();
@@ -101,9 +150,43 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
     }
 
     internal void MakeAnOrder(object sender, RoutedEventArgs e) {
-        
+        IsPlacingAnOrder = true;
+    }
+
+    internal void MakeAnOrderCancel(object sender, RoutedEventArgs e) {
+        IsPlacingAnOrder = false;
+    }
+
+    internal void MakeAnOrderSubmit(object sender, RoutedEventArgs e) {
+        if (!AllowPlacingAnOrder) return;
+    }
+    
+    internal void MakeOnOrderComboBox_SelectionChanged(object sender, RoutedEventArgs e) {
+        if (sender is ComboBox comboBox) {
+            if (comboBox.SelectedValue != null) {
+                NewOrderType = comboBox.SelectedValue.ToString() ?? "";
+            }
+        }
+    }
+    
+    internal void MakeOnOrderCheckBox_Checked(object sender, RoutedEventArgs e) {
+        NewOrderChecked = true;
+    }
+
+    internal void MakeOnOrderCheckBox_Unchecked(object sender, RoutedEventArgs e) {
+        NewOrderChecked = false;
+    }
+
+    private void CheckIfAllowedToPlaceAnOrder() {
+        if (NewOrderBrand.Trim().Length < 3 || NewOrderModel.Trim().Length < 3 ||
+            NewOrderType.Trim().Length == 0 || !NewOrderChecked) {
+            AllowPlacingAnOrder = false;
+            return;
+        }
+        AllowPlacingAnOrder = true;
     }
 
     public void OnNavigatedFrom() {
+        
     }
 }

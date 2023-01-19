@@ -213,6 +213,7 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
         NewOrderBrand = string.Empty;
         NewOrderModel = string.Empty;
         NewOrderType = string.Empty;
+        NewOrderPrice = 0;
         NewOrderChecked = false;
         IsOrderBeingSendToServer = false;
         await GetUserRoweryMethod();

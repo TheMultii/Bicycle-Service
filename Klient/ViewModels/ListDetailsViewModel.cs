@@ -1,53 +1,124 @@
 ﻿using System.Collections.ObjectModel;
-
 using CommunityToolkit.Mvvm.ComponentModel;
-
+using IdGen;
 using Klient.Contracts.ViewModels;
-using Klient.Core.Contracts.Services;
+using Klient.Core.Api;
+using Klient.Core.Model;
 using Klient.Core.Models;
+using Newtonsoft.Json;
 
 namespace Klient.ViewModels;
 
-public class ListDetailsViewModel : ObservableRecipient, INavigationAware
-{
-    private readonly ISampleDataService _sampleDataService;
-    private SampleOrder? _selected;
+public class ListDetailsViewModel : ObservableRecipient, INavigationAware {
 
-    public SampleOrder? Selected
-    {
+    private static readonly string tokenPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "token.bin");
+    private static readonly string myDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "myData.json");
+
+    private string _token = string.Empty;
+    public string Token {
+        get => _token;
+        set => SetProperty(ref _token, value);
+    }
+
+    private UserMyDataDTO? _userDataDTO = null;
+    public UserMyDataDTO? UserDataDTO {
+        get => _userDataDTO;
+        set => SetProperty(ref _userDataDTO, value);
+    }
+
+    private bool _isLoading = false;
+    public bool IsLoading {
+        get => _isLoading;
+        set => SetProperty(ref _isLoading, value);
+    }
+
+    private static readonly DateTime epoch = new(2015, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly IdStructure structure = new(41, 10, 12);
+    private static readonly IdGeneratorOptions options = new(structure, new DefaultTimeSource(epoch));
+    private static readonly IdGenerator generator = new(0, options);
+    
+    private RowerExtended? _selected;
+    public RowerExtended? Selected {
         get => _selected;
         set => SetProperty(ref _selected, value);
     }
 
-    public ObservableCollection<SampleOrder> SampleItems { get; private set; } = new ObservableCollection<SampleOrder>();
+    public ObservableCollection<RowerExtended> AllUsersOrders { get; private set; } = new();
 
-    public ListDetailsViewModel(ISampleDataService sampleDataService)
-    {
-        _sampleDataService = sampleDataService;
-    }
-
-    public async void OnNavigatedTo(object parameter)
-    {
-        SampleItems.Clear();
-
-        // TODO: Replace with real data.
-        var data = await _sampleDataService.GetListDetailsDataAsync();
-
-        foreach (var item in data)
-        {
-            SampleItems.Add(item);
+    public ListDetailsViewModel() {
+        try {
+            using StreamReader reader = new(new FileStream(myDataPath, FileMode.Open, FileAccess.ReadWrite));
+            UserDataDTO = JsonConvert.DeserializeObject<UserMyDataDTO?>(reader.ReadToEnd());
+        } catch (Exception) {
+            UserDataDTO = null;
         }
+        if (UserDataDTO == null) return;
+        try {
+            using BinaryReader reader = new(new FileStream(tokenPath, FileMode.Open, FileAccess.ReadWrite));
+            _token = reader.ReadString();
+            Core.Client.Configuration.Default.BasePath = "https://localhost:7050/";
+            if (Core.Client.Configuration.Default.DefaultHeader.ContainsKey("Authorization")) {
+                Core.Client.Configuration.Default.DefaultHeader.Remove("Authorization");
+            }
+            Core.Client.Configuration.Default.DefaultHeader.Add("Authorization", "Bearer " + _token);
+        } catch (Exception) { }
     }
 
-    public void OnNavigatedFrom()
-    {
+    public async void OnNavigatedTo(object parameter) => await GetAllUsersOrdersMethod();
+
+    public void OnNavigatedFrom() {
     }
 
-    public void EnsureItemSelected()
-    {
-        if (Selected == null)
-        {
-            Selected = SampleItems.First();
+    public void EnsureItemSelected() {
+        Selected ??= AllUsersOrders.First();
+    }
+
+    private async Task GetAllUsersOrdersMethod() {
+        if (Token == string.Empty) return;
+        if (UserDataDTO == null) return;
+        if (UserDataDTO.Permission != "Service" && UserDataDTO.Permission != "Shop") return;
+
+        AllUsersOrders.Clear();
+        
+        if (Token == string.Empty) return;
+        IsLoading = true;
+
+        IEnumerable<RowerExtended> _orders = (await GetAllUsersOrders()).Reverse();
+        
+        foreach (RowerExtended _order in _orders) {
+            AllUsersOrders.Add(_order);
         }
+        IsLoading = false;
+    }
+
+    private static async Task<IEnumerable<RowerExtended>> GetAllUsersOrders() {
+        try {
+            ISerwisRowerowyApi serwisRowerowyApi = new SerwisRowerowyApi();
+            List<Rower> _orders = await serwisRowerowyApi.ApiServiceBicyclesGetAsync();
+
+            List<RowerExtended> _ordersExtended = new();
+            foreach (var order in _orders) {
+                DateTime createdAt = DateTime.MinValue;
+
+                try {
+                    Id id = generator.FromId(order.Uid ?? 0);
+                    createdAt = id.DateTimeOffset.ToLocalTime().DateTime;
+                } catch (Exception) { }
+
+                _ordersExtended.Add(new RowerExtended {
+                    Uid = order.Uid,
+                    Owner = order.Owner,
+                    Brand = order.Brand,
+                    Model = order.Model,
+                    Type = order.Type,
+                    Price = order.Price,
+                    Status = order.Status,
+                    CreatedAt = createdAt
+                });
+            }
+            return _ordersExtended;
+        } catch (Exception) { }
+
+        return new List<RowerExtended>();
     }
 }

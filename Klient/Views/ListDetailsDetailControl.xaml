@@ -3,8 +3,16 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:lcl="using:Klient.Helpers"
     mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <lcl:DoubleToPriceStringConverter x:Key="doubleToPriceStringConverter" />
+            <lcl:UIDToDateTimeConverter x:Key="uidToDateTimeConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
     <ScrollViewer
         Name="ForegroundElement"
         HorizontalAlignment="Stretch"
@@ -16,57 +24,116 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     FontSize="48"
-                    Glyph="{x:Bind ListDetailsMenuItem.Symbol, Mode=OneWay}"
-                    AutomationProperties.Name="{x:Bind ListDetailsMenuItem.SymbolName, Mode=OneWay}"  />
+                    Glyph="&#xe7bf;"
+                    AutomationProperties.Name="Contact"  />
                 <TextBlock
                     Margin="{StaticResource SmallLeftMargin}"
                     VerticalAlignment="Center"
-                    Text="{x:Bind ListDetailsMenuItem.Company, Mode=OneWay}"
+                    Text="{x:Bind RowerItem.BicycleString, Mode=OneWay}"
                     Style="{ThemeResource TitleTextBlockStyle}" />
             </StackPanel>
             <StackPanel Padding="0,15,0,0">
-                <TextBlock Text="Status" Style="{StaticResource DetailSubTitleStyle}" />
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-                <TextBlock Text="{x:Bind ListDetailsMenuItem.Status, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
+                    <StackPanel Grid.Row="0" Grid.Column="0">
+                        <TextBlock
+                        Margin="{StaticResource SmallTopMargin}"
+                        Text="UID"
+                        Style="{StaticResource DetailSubTitleStyle}" />
+                        <TextBlock IsTextSelectionEnabled="True" Text="{x:Bind RowerItem.Uid, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
+                    </StackPanel>
 
-                <TextBlock
-                    Margin="{StaticResource SmallTopMargin}"
-                    Text="Order date"
-                    Style="{StaticResource DetailSubTitleStyle}" />
-                <TextBlock Text="{x:Bind ListDetailsMenuItem.OrderDate, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
-                <TextBlock
-                    Margin="{StaticResource SmallTopMargin}"
-                    Text="Company"
-                    Style="{StaticResource DetailSubTitleStyle}" />
-                <TextBlock Text="{x:Bind ListDetailsMenuItem.Company, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
+                    <StackPanel Grid.Row="0" Grid.Column="2">
+                        <TextBlock
+                        Margin="{StaticResource SmallTopMargin}"
+                        Text="Status"
+                        Style="{StaticResource DetailSubTitleStyle}" />
+                        <TextBlock IsTextSelectionEnabled="True" Text="{x:Bind RowerItem.NewestStatus, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
+                    </StackPanel>
 
-                <TextBlock
-                    Margin="{StaticResource SmallTopMargin}"
-                    Text="Ship to"
-                    Style="{StaticResource DetailSubTitleStyle}" />
-                <TextBlock Text="{x:Bind ListDetailsMenuItem.ShipTo, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
-                <TextBlock
-                    Margin="{StaticResource SmallTopMargin}"
-                    Text="Order total"
-                    Style="{StaticResource DetailSubTitleStyle}" />
-                <TextBlock Text="{x:Bind ListDetailsMenuItem.OrderTotal, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
+                    <StackPanel Grid.Row="1" Grid.Column="0">
+                        <TextBlock
+                        Margin="{StaticResource SmallTopMargin}"
+                        Text="Data zamówienia"
+                        Style="{StaticResource DetailSubTitleStyle}" />
+                        <TextBlock IsTextSelectionEnabled="True" Text="{x:Bind RowerItem.CreatedAt, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="2">
+                        <TextBlock
+                        Margin="{StaticResource SmallTopMargin}"
+                        Text="Wartość zamówienia"
+                        Style="{StaticResource DetailSubTitleStyle}" />
+                        <TextBlock IsTextSelectionEnabled="True" Text="{x:Bind RowerItem.Price, Mode=OneWay, ConverterParameter='false', Converter={StaticResource doubleToPriceStringConverter}}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
+                    </StackPanel>
+                </Grid>
 
                 <TextBlock
                     Margin="{StaticResource MediumTopMargin}"
-                    Text="Note 1"
+                    Text="Zamówiony rower"
                     Style="{StaticResource DetailSubTitleStyle}" />
-                <TextBlock
-                    Style="{StaticResource DetailBodyStyle}"
-                    Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis quis hendrerit nulla, vel molestie libero. In nec ultricies magna, ultricies molestie ipsum. Mauris non dignissim velit. Etiam malesuada blandit mauris eu maximus. Quisque ornare, felis nec scelerisque mollis, risus dolor posuere magna, in gravida quam mi id nisi. Nullam mattis consequat ex. Cras nulla neque, dictum ac urna et, vestibulum feugiat ex. Pellentesque malesuada accumsan ligula, vel fringilla lacus facilisis sit amet. Proin convallis tempor arcu, ac placerat libero pretium ut. Praesent hendrerit nisl at lobortis viverra. Fusce vitae velit odio. Nam ut tortor sed purus finibus sollicitudin quis at ante. Ut sodales dolor vel eros mollis suscipit. Donec eu nulla id urna ultricies consequat. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;" />
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="30" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Marka" />
+                    <TextBlock IsTextSelectionEnabled="True" Grid.Row="0" Grid.Column="2" Text="{x:Bind RowerItem.Brand, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
+
+                    <TextBlock Grid.Row="1" Margin="0 6 0 6" Grid.Column="0" Text="Model" />
+                    <TextBlock IsTextSelectionEnabled="True" Grid.Row="1" Margin="0 6 0 6" Grid.Column="2" Text="{x:Bind RowerItem.Model, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Typ" />
+                    <TextBlock IsTextSelectionEnabled="True" Grid.Row="2" Grid.Column="2" Text="{x:Bind RowerItem.Type, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
+                </Grid>
+
 
                 <TextBlock
-                    Margin="{StaticResource SmallTopMargin}"
-                    Text="Note 2"
+                    Margin="{StaticResource MediumTopMargin}"
+                    Text="Historia aktualizacji statusu zamówienia"
                     Style="{StaticResource DetailSubTitleStyle}" />
-                <TextBlock
-                    Margin="{StaticResource MediumBottomMargin}"
-                    Style="{StaticResource DetailBodyStyle}"
-                    Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis quis hendrerit nulla, vel molestie libero. In nec ultricies magna, ultricies molestie ipsum. Mauris non dignissim velit. Etiam malesuada blandit mauris eu maximus. Quisque ornare, felis nec scelerisque mollis, risus dolor posuere magna, in gravida quam mi id nisi. Nullam mattis consequat ex. Cras nulla neque, dictum ac urna et, vestibulum feugiat ex. Pellentesque malesuada accumsan ligula, vel fringilla lacus facilisis sit amet. Proin convallis tempor arcu, ac placerat libero pretium ut. Praesent hendrerit nisl at lobortis viverra. Fusce vitae velit odio. Nam ut tortor sed purus finibus sollicitudin quis at ante. Ut sodales dolor vel eros mollis suscipit. Donec eu nulla id urna ultricies consequat. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;" />
+                <ListView
+                    Margin="-5 0 0 0"
+                    SelectionMode="Single"
+                    ItemsSource="{x:Bind RowerItem.Status}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0 5 0 5">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Margin="0 0 5 0" Style="{StaticResource DetailBodyBaseMediumStyle}" Text="{Binding ChangedBy.Name}" />
+                                    <TextBlock Style="{StaticResource DetailBodyBaseMediumStyle}" Text="{Binding ChangedBy.Surname}" />
+                                    <FontIcon
+                                        HorizontalAlignment="Left"
+                                        FontSize="15"
+                                        Margin="8 0 8 0"
+                                        Glyph="&#xea62;"
+                                        Foreground="#99FFFFFF"
+                                        AutomationProperties.Name="Arrow right"  />
+                                    <TextBlock Style="{StaticResource DetailBodyBaseMediumStyle}" Text="{Binding Status}" />
+                                </StackPanel>
+
+                                <TextBlock Margin="0 5 0 0" Style="{StaticResource DetailBodyBaseMediumStyle}" Text="{Binding Uid, Converter={StaticResource uidToDateTimeConverter}}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
             </StackPanel>
         </StackPanel>
     </ScrollViewer>

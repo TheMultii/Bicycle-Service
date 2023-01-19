@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using IdGen;
 using Klient.Contracts.ViewModels;
 using Klient.Core.Api;
+using Klient.Core.Client;
 using Klient.Core.Model;
 using Klient.Core.Models;
 using Microsoft.UI.Xaml;
@@ -12,7 +13,7 @@ using Newtonsoft.Json;
 namespace Klient.ViewModels;
 
 public class DataGridViewModel : ObservableRecipient, INavigationAware {
-    
+
     private static readonly string tokenPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "token.bin");
     private static readonly string myDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "myData.json");
 
@@ -20,6 +21,12 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
     public string Token {
         get => _token;
         set => SetProperty(ref _token, value);
+    }
+
+    private UserMyDataDTO? _userDataDTO = null;
+    public UserMyDataDTO? UserDataDTO {
+        get => _userDataDTO;
+        set => SetProperty(ref _userDataDTO, value);
     }
 
     private bool _isLoading = false;
@@ -88,24 +95,17 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
         set => SetProperty(ref _newOrderPrice, value);
     }
 
-    private UserMyDataDTO? _userDataDTO = null;
-    public UserMyDataDTO? UserDataDTO {
-        get => _userDataDTO;
-        set => SetProperty(ref _userDataDTO, value);
-    }
-
     public ObservableCollection<RowerReturnable> Source { get; } = new();
 
     private static readonly DateTime epoch = new(2015, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     private static readonly IdStructure structure = new(41, 10, 12);
-    private static readonly IdGeneratorOptions options =  new (structure, new DefaultTimeSource(epoch));
+    private static readonly IdGeneratorOptions options = new(structure, new DefaultTimeSource(epoch));
     private static readonly IdGenerator generator = new(0, options);
 
     public DataGridViewModel() {
-
         try {
-            using StreamReader reader3 = new(new FileStream(myDataPath, FileMode.Open, FileAccess.ReadWrite));
-            UserDataDTO = JsonConvert.DeserializeObject<UserMyDataDTO?>(reader3.ReadToEnd());
+            using StreamReader reader = new(new FileStream(myDataPath, FileMode.Open, FileAccess.ReadWrite));
+            UserDataDTO = JsonConvert.DeserializeObject<UserMyDataDTO?>(reader.ReadToEnd());
         } catch (Exception) {
             UserDataDTO = null;
         }
@@ -130,7 +130,7 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
             List<RowerReturnableExtended> roweryExtended = new();
             foreach (var rower in rowery) {
                 DateTime createdAt = DateTime.MinValue;
-                
+
                 try {
                     Id id = generator.FromId(rower.Uid ?? 0);
                     createdAt = id.DateTimeOffset.ToLocalTime().DateTime;
@@ -170,10 +170,10 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
         if (Token == string.Empty) return;
         if (UserDataDTO == null) return;
         if (UserDataDTO.Permission != "Customer") return;
-        
+
         Source.Clear();
 
-        if (_token == string.Empty) return;
+        if (Token == string.Empty) return;
         IsLoading = true;
 
         IEnumerable<RowerReturnable> data = (await GetUserRowery()).Reverse();
@@ -218,7 +218,7 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
         IsOrderBeingSendToServer = false;
         await GetUserRoweryMethod();
     }
-    
+
     internal void MakeOnOrderComboBox_SelectionChanged(object sender, RoutedEventArgs e) {
         if (sender is ComboBox comboBox) {
             if (comboBox.SelectedValue != null) {
@@ -227,8 +227,8 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
             }
         }
     }
-    
-    internal void MakeOnOrderCheckBox_Checked(object sender, RoutedEventArgs e)  => NewOrderChecked = true;
+
+    internal void MakeOnOrderCheckBox_Checked(object sender, RoutedEventArgs e) => NewOrderChecked = true;
 
     internal void MakeOnOrderCheckBox_Unchecked(object sender, RoutedEventArgs e) => NewOrderChecked = false;
 
@@ -238,14 +238,14 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
             AllowPlacingAnOrder = false;
             return;
         }
-        
+
         Random r = new();
         NewOrderPrice = Math.Round((r.NextDouble() * 1000), 2);
-        
+
         AllowPlacingAnOrder = true;
     }
 
     public void OnNavigatedFrom() {
-        
+
     }
 }

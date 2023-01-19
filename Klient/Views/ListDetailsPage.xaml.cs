@@ -21,9 +21,9 @@ public sealed partial class ListDetailsPage : Page
 
     private void OnViewStateChanged(object sender, ListDetailsViewState e)
     {
-        if (e == ListDetailsViewState.Both)
-        {
-            ViewModel.EnsureItemSelected();
-        }
+        //if (e == ListDetailsViewState.Both)
+        //{
+        //    ViewModel.EnsureItemSelected();
+        //}
     }
 }

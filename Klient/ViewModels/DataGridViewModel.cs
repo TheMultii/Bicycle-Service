@@ -96,8 +96,12 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
         IsLoading = false;
     }
 
-    internal async void RefreshData(object sender, RoutedEventArgs e, DataGridViewModel vm) {
+    internal async void RefreshData(object sender, RoutedEventArgs e) {
         await GetUserRoweryMethod();
+    }
+
+    internal void MakeAnOrder(object sender, RoutedEventArgs e) {
+        
     }
 
     public void OnNavigatedFrom() {

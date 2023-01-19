@@ -215,4 +215,7 @@
   <data name="DataGridPage_Refresh.Content" xml:space="preserve">
     <value>Refresh</value>
   </data>
+  <data name="DataGridPage_Add.Content" xml:space="preserve">
+    <value>Make an order</value>
+  </data>
 </root>

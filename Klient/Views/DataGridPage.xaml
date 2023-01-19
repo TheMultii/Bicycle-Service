@@ -20,7 +20,10 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Button Margin="0 0 0 10" Visibility="{Binding IsLoading, ConverterParameter='False', Converter={StaticResource boolToVisibilityConverter}}" x:Uid="DataGridPage_Refresh" HorizontalAlignment="Right" Grid.Row="0"  Click="RefreshData" />
+        <StackPanel Margin="0 0 0 15" Orientation="Horizontal" Grid.Row="0"  HorizontalAlignment="Right">
+            <Button Margin="0 0 10 0" Visibility="{Binding IsLoading, ConverterParameter='False', Converter={StaticResource boolToVisibilityConverter}}" x:Uid="DataGridPage_Add" Grid.Row="0"  Click="MakeAnOrder" />
+            <Button Visibility="{Binding IsLoading, ConverterParameter='False', Converter={StaticResource boolToVisibilityConverter}}" x:Uid="DataGridPage_Refresh" Grid.Row="0"  Click="RefreshData" />
+        </StackPanel>
 
         <controls:DataGrid
             Grid.Row="1"

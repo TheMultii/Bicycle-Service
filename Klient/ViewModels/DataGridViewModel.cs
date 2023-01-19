@@ -108,9 +108,7 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
         } catch (Exception) { }
     }
 
-    public async void OnNavigatedTo(object parameter) {
-        await GetUserRoweryMethod();
-    }
+    public async void OnNavigatedTo(object parameter) => await GetUserRoweryMethod();
 
     private static async Task<IEnumerable<RowerReturnableExtended>> GetUserRowery() {
         ISerwisRowerowyApi serwisRowerowyApi = new SerwisRowerowyApi();
@@ -151,9 +149,7 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
         IsLoading = false;
     }
 
-    internal async void RefreshData(object sender, RoutedEventArgs e) {
-        await GetUserRoweryMethod();
-    }
+    internal async void RefreshData(object sender, RoutedEventArgs e) => await GetUserRoweryMethod();
 
     internal void MakeAnOrder(object sender, RoutedEventArgs e) {
         IsPlacingAnOrder = true;
@@ -177,13 +173,9 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
         }
     }
     
-    internal void MakeOnOrderCheckBox_Checked(object sender, RoutedEventArgs e) {
-        NewOrderChecked = true;
-    }
+    internal void MakeOnOrderCheckBox_Checked(object sender, RoutedEventArgs e)  => NewOrderChecked = true;
 
-    internal void MakeOnOrderCheckBox_Unchecked(object sender, RoutedEventArgs e) {
-        NewOrderChecked = false;
-    }
+    internal void MakeOnOrderCheckBox_Unchecked(object sender, RoutedEventArgs e) => NewOrderChecked = false;
 
     private void CheckIfAllowedToPlaceAnOrder() {
         if (NewOrderBrand.Trim().Length < 3 || NewOrderModel.Trim().Length < 3 ||

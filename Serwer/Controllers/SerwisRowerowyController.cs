@@ -59,10 +59,10 @@ namespace Serwer.Controllers {
         [Authorize]
         public ActionResult<IEnumerable<Rower>> GetBicycles() {
             string permission = _userService.GetRole().ToLower();
-            if (permission != "service" || permission != "shop") return Unauthorized();
+            if (permission != "service" && permission != "shop") return Unauthorized();
             
             var command = _connection.CreateCommand();
-            command.CommandText = "SELECT * FROM rowery";
+            command.CommandText = "SELECT * FROM Bicycles";
             var reader = command.ExecuteReader();
             var bicycles = new List<Rower>();
             while (reader.Read()) {
@@ -81,9 +81,9 @@ namespace Serwer.Controllers {
                 var status_reader = status_command.ExecuteReader();
                 while (status_reader.Read()) {
                     long status_uid = status_reader.GetInt64(0);
-                    long changed_by_id = status_reader.GetInt64(1);
+                    long changed_by_id = status_reader.GetInt64(2);
                     User changed_by = GetUserByUID(changed_by_id);
-                    string status_name = status_reader.GetString(2);
+                    string status_name = status_reader.GetString(3);
                     status.Add(new RowerStatus(status_uid, changed_by, status_name));
                 }
 

@@ -1,5 +1,6 @@
 ﻿using IdGen;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using Microsoft.IdentityModel.Tokens;
@@ -91,8 +92,6 @@ namespace Serwer.Controllers {
             User user = new() {
                 UID = id.ToString(),
                 Login = request.Username,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
                 Name = request.Name,
                 Surname = request.Surname,
                 AccountType = "Customer"
@@ -125,12 +124,12 @@ namespace Serwer.Controllers {
                 Name = reader.GetString(1),
                 Surname = reader.GetString(2),
                 Login = reader.GetString(3),
-                PasswordHash = (byte[])reader.GetValue(4),
-                PasswordSalt = (byte[])reader.GetValue(5),
                 AccountType = reader.GetString(6)
             };
+            byte[] PasswordHash = (byte[])reader.GetValue(4);
+            byte[] PasswordSalt = (byte[])reader.GetValue(5);
             
-            if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt)) {
+            if (!VerifyPasswordHash(request.Password, PasswordHash, PasswordSalt)) {
                 return BadRequest("Wrong password");
             }
             
@@ -208,16 +207,6 @@ namespace Serwer.Controllers {
             if (userRenewal == null) return Unauthorized();
             
             return Ok(CreateToken(userRenewal));
-        }
-
-        /// <summary>
-        /// TEST
-        /// </summary>
-        /// <returns>Test</returns>
-        [HttpGet("test")]
-        [Produces("text/plain")]
-        public ActionResult<string> Test() {
-            return Ok($"Test | {generator.CreateId()}");
         }
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt) {

@@ -66,6 +66,7 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
     }
 
     private async Task GetUserRoweryMethod() {
+        if (Token == string.Empty) return;
         Source.Clear();
 
         if (_token == string.Empty) return;

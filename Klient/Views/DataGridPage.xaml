@@ -51,6 +51,7 @@
                         <controls:DataGridTextColumn Binding="{Binding Price}" Header="Cena" />
                         <controls:DataGridTextColumn Binding="{Binding NewestStatus}" Header="Najnowszy status" />
                         <controls:DataGridTextColumn Binding="{Binding StatusCount}" Header="Ilość statusów" />
+                        <controls:DataGridTextColumn Binding="{Binding CreatedAt}" Header="Data złożenia zamówienia" />
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
 

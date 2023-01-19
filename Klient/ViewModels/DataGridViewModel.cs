@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using IdGen;
 using Klient.Contracts.ViewModels;
 using Klient.Core.Api;
 using Klient.Core.Model;
@@ -95,7 +96,13 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
 
     public ObservableCollection<RowerReturnable> Source { get; } = new();
 
+    private static readonly DateTime epoch = new(2015, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly IdStructure structure = new(41, 10, 12);
+    private static readonly IdGeneratorOptions options =  new (structure, new DefaultTimeSource(epoch));
+    private static readonly IdGenerator generator = new(0, options);
+
     public DataGridViewModel() {
+
         try {
             using StreamReader reader3 = new(new FileStream(myDataPath, FileMode.Open, FileAccess.ReadWrite));
             UserDataDTO = JsonConvert.DeserializeObject<UserMyDataDTO?>(reader3.ReadToEnd());
@@ -122,8 +129,16 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
             List<RowerReturnable> rowery = await serwisRowerowyApi.MyOrdersGetAsync();
             List<RowerReturnableExtended> roweryExtended = new();
             foreach (var rower in rowery) {
+                DateTime createdAt = DateTime.MinValue;
+                
+                try {
+                    Id id = generator.FromId(rower.Uid ?? 0);
+                    createdAt = id.DateTimeOffset.ToLocalTime().DateTime;
+                } catch (Exception) { }
+
                 roweryExtended.Add(new RowerReturnableExtended {
                     Uid = rower.Uid,
+                    CreatedAt = createdAt,
                     OwnerUID = rower.OwnerUID,
                     Brand = rower.Brand,
                     Model = rower.Model,

@@ -74,9 +74,7 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
                 });
             }
             return roweryExtended;
-        } catch (Exception) {
-            //
-        }
+        } catch (Exception) { }
         return new List<RowerReturnableExtended>();
     }
 

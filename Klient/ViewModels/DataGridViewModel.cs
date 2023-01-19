@@ -1,17 +1,17 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-
 using Klient.Contracts.ViewModels;
 using Klient.Core.Api;
 using Klient.Core.Model;
 using Klient.Core.Models;
 using Microsoft.UI.Xaml;
-using Newtonsoft.Json.Linq;
 
 namespace Klient.ViewModels;
 
 public class DataGridViewModel : ObservableRecipient, INavigationAware {
-
+    
+    private static readonly string tokenPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "token.bin");
+    
     private string _token = string.Empty;
     public string Token {
         get => _token;
@@ -28,8 +28,7 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
 
     public DataGridViewModel() {
         try {
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "token.bin");
-            using BinaryReader reader = new(new FileStream(path, FileMode.Open, FileAccess.ReadWrite));
+            using BinaryReader reader = new(new FileStream(tokenPath, FileMode.Open, FileAccess.ReadWrite));
             _token = reader.ReadString();
             Core.Client.Configuration.Default.BasePath = "https://localhost:7050/";
             if (Core.Client.Configuration.Default.DefaultHeader.ContainsKey("Authorization")) {

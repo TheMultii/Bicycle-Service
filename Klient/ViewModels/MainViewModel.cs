@@ -20,11 +20,11 @@ public class MainViewModel : ObservableRecipient {
         get => _userDataDTO;
         set => SetProperty(ref _userDataDTO, value);
     }
-
+    
     //paths
-    private string tokenPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "token.bin");
-    private string tokenExpirePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tokenExpire.bin");
-    private string myDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "myData.json");
+    private static readonly string tokenPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "token.bin");
+    private static readonly string tokenExpirePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tokenExpire.bin");
+    private static readonly string myDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "myData.json");
 
     //login section
     private string _login = string.Empty;

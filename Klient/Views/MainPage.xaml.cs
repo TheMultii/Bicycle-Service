@@ -17,14 +17,14 @@ public sealed partial class MainPage : Page {
     }
 
     private void LoginButtonClick(object sender, RoutedEventArgs e) {
-        ViewModel.LoginButtonClick(sender, e, ViewModel);
+        ViewModel.LoginButtonClick(sender, e);
     }
 
     private void RegisterButtonClick(object sender, RoutedEventArgs e) {
-        ViewModel.RegisterButtonClick(sender, e, ViewModel);
+        ViewModel.RegisterButtonClick(sender, e);
     }
 
     private void LogoutButtonClick(object sender, RoutedEventArgs e) {
-        ViewModel.LogoutButtonClick(sender, e, ViewModel);
+        ViewModel.LogoutButtonClick(sender, e);
     }
 }

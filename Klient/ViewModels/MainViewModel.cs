@@ -99,6 +99,17 @@ public class MainViewModel : ObservableRecipient {
             using BinaryReader reader2 = new(new FileStream(tokenExpirePath, FileMode.Open, FileAccess.ReadWrite));
             TokenExpireDate = DateTime.Parse(reader2.ReadString());
             TokenExpireDateString = $"Twój token wygaśnie {TokenExpireDate:dd.MM.yyyy HH:mm:ss}.";
+            
+            if (TokenExpireDate < DateTime.Now) {
+                Token = string.Empty;
+                TokenExpireDate = DateTime.MinValue;
+                TokenExpireDateString = "";
+
+                File.Delete(tokenPath);
+                File.Delete(tokenExpirePath);
+                File.Delete(myDataPath);
+                return;
+            }
 
             using StreamReader reader3 = new(new FileStream(myDataPath, FileMode.Open, FileAccess.ReadWrite));
             UserDataDTO = JsonConvert.DeserializeObject<UserMyDataDTO?>(reader3.ReadToEnd());
@@ -119,7 +130,7 @@ public class MainViewModel : ObservableRecipient {
         return await dialog.ShowAsync();
     }
 
-    internal async void RegisterButtonClick(object sender, RoutedEventArgs e, MainViewModel vm) {
+    internal async void RegisterButtonClick(object sender, RoutedEventArgs e) {
         string errorMessage = string.Empty;
         bool displayError = false;
 
@@ -136,16 +147,16 @@ public class MainViewModel : ObservableRecipient {
         }
         IsLoading = true;
 
-        vm.RegisterLogin = "";
-        vm.RegisterName = "";
-        vm.RegisterSurname = "";
-        vm.RegisterPassword = "";
-        vm.RegisterPasswordConfirm = "";
+        RegisterLogin = "";
+        RegisterName = "";
+        RegisterSurname = "";
+        RegisterPassword = "";
+        RegisterPasswordConfirm = "";
 
         IsLoading = false;
     }
 
-    internal async void LoginButtonClick(object sender, RoutedEventArgs e, MainViewModel vm) {
+    internal async void LoginButtonClick(object sender, RoutedEventArgs e) {
         string errorMessage = string.Empty;
         bool displayError = false;
 
@@ -173,8 +184,8 @@ public class MainViewModel : ObservableRecipient {
                 DateTime tomorrow = DateTime.Now.AddDays(1);
                 TokenExpireDateString = $"Twój token wygaśnie {tomorrow:dd.MM.yyyy HH:mm:ss}.";
                 TokenExpireDate = DateTime.Now.AddDays(1);
-                vm.Login = "";
-                vm.Password = "";
+                Login = "";
+                Password = "";
                 
                 if (Core.Client.Configuration.Default.DefaultHeader.ContainsKey("Authorization")) {
                     Core.Client.Configuration.Default.DefaultHeader.Remove("Authorization");
@@ -207,12 +218,13 @@ public class MainViewModel : ObservableRecipient {
         IsLoading = false;
     }
     
-    internal void LogoutButtonClick(object sender, RoutedEventArgs e, MainViewModel vm) {
-        vm.Token = string.Empty;
-        vm.TokenExpireDate = DateTime.MinValue;
-        vm.TokenExpireDateString = "";
+    internal void LogoutButtonClick(object sender, RoutedEventArgs e) {
+        Token = string.Empty;
+        TokenExpireDate = DateTime.MinValue;
+        TokenExpireDateString = "";
         
         File.Delete(tokenPath);
         File.Delete(tokenExpirePath);
+        File.Delete(myDataPath);
     }
 }

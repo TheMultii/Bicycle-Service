@@ -102,7 +102,7 @@ namespace Serwer.Controllers {
         [Authorize]
         public ActionResult<Rower> GetBicycle(long uid) {
             string permission = _userService.GetRole().ToLower();
-            if (permission != "service" || permission != "shop") return Unauthorized();
+            if (permission != "service" && permission != "shop") return Unauthorized();
             
             var command = _connection.CreateCommand();
             command.CommandText = "SELECT * FROM Bicycles WHERE uid = @uid";
@@ -123,9 +123,9 @@ namespace Serwer.Controllers {
                 var status_reader = status_command.ExecuteReader();
                 while (status_reader.Read()) {
                     long status_uid = status_reader.GetInt64(0);
-                    long changed_by_id = status_reader.GetInt64(1);
+                    long changed_by_id = status_reader.GetInt64(2);
                     User changed_by = GetUserByUID(changed_by_id);
-                    string status_name = status_reader.GetString(2);
+                    string status_name = status_reader.GetString(3);
                     status.Add(new RowerStatus(status_uid, changed_by, status_name));
                 }
                 return Ok(new Rower(uid, owner, brand, model, type, price, status));
@@ -180,7 +180,7 @@ namespace Serwer.Controllers {
                 command.ExecuteNonQuery();
 
                 return Ok(new RowerReturnable {
-                    UID = uid,
+                    UID = uid.ToString(),
                     OwnerUID = user_uid,
                     Brand = request.Brand,
                     Model = request.Model,
@@ -202,7 +202,7 @@ namespace Serwer.Controllers {
         [Authorize]
         public ActionResult<RowerReturnable> UpdateOrder(long uid, RowerDTO request) {
             string permission = _userService.GetRole().ToLower();
-            if (permission != "service" || permission != "shop") return Unauthorized();
+            if (permission != "service" && permission != "shop") return Unauthorized();
 
             SqliteCommand command = _connection.CreateCommand();
             command.CommandText =
@@ -228,7 +228,7 @@ namespace Serwer.Controllers {
             }
 
             RowerReturnable returnable = new() {
-                UID = uid,
+                UID = uid.ToString(),
                 Brand = request.Brand,
                 Model = request.Model,
                 Type = request.Type,
@@ -248,7 +248,7 @@ namespace Serwer.Controllers {
         [Authorize]
         public ActionResult<RowerReturnable> UpdateOrderStatus(long uid, RowerStatusDTO request) {
             string permission = _userService.GetRole().ToLower();
-            if (permission != "service" || permission != "shop") return Unauthorized();
+            if (permission != "service" && permission != "shop") return Unauthorized();
 
             if (request.Status == "Zrealizowane" && permission != "shop") return Unauthorized("You don't have permission to change status to 'Zrealizowane'");
             if (request.Status == "Oczekujące" && permission != "service") return Unauthorized("You don't have permission to change status to 'Oczekujące'");
@@ -298,9 +298,8 @@ namespace Serwer.Controllers {
                     return NotFound();
                 }
 
-
                 RowerReturnable returnable = new() {
-                    UID = uid,
+                    UID = uid.ToString(),
                     Brand = brand,
                     Model = model,
                     Type = type,
@@ -350,7 +349,7 @@ namespace Serwer.Controllers {
                     }
 
                     RowerReturnable rower = new() {
-                        UID = bicycle_uid,
+                        UID = bicycle_uid.ToString(),
                         OwnerUID = uid,
                         Brand = brand,
                         Model = model,

@@ -1,6 +1,6 @@
 ﻿namespace Serwer {
     public class Rower {
-        public long UID {
+        public string UID {
             get; set;
         }
 
@@ -27,9 +27,9 @@
         public List<RowerStatus> Status {
             get; set;
         }
-
+        
         public Rower(long uid, User owner, string brand, string model, string type, double price, List<RowerStatus> status) {
-            UID = uid;
+            UID = uid.ToString();
             Owner = owner;
             Brand = brand;
             Model = model;
@@ -38,7 +38,7 @@
             Status = status;
         }
         public Rower(User owner, string brand, string model, string type, double price, List<RowerStatus> status) {
-            UID = 0;
+            UID = "";
             Owner = owner;
             Brand = brand;
             Model = model;
@@ -98,9 +98,9 @@
     }
 
     public class RowerReturnable {
-        public long UID {
+        public string UID {
             get; set;
-        } = 0;
+        } = string.Empty;
 
         public long OwnerUID {
             get; set;

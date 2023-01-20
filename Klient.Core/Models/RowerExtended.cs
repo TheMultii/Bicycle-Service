@@ -10,7 +10,7 @@ namespace Klient.Core.Models {
         public int StatusCount {
             get => Status.Count;
         }
-        
+
         public string OwnerString {
             get => $"{Owner.Name} {Owner.Surname}";
         }

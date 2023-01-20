@@ -103,12 +103,12 @@
                     <TextBlock IsTextSelectionEnabled="True" Grid.Row="2" Grid.Column="2" Text="{x:Bind RowerItem.Type, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
                 </Grid>
 
-
                 <TextBlock
                     Margin="{StaticResource MediumTopMargin}"
                     Text="Historia aktualizacji statusu zamówienia"
                     Style="{StaticResource DetailSubTitleStyle}" />
                 <ListView
+                    x:Name="lViewContainer"
                     Margin="-5 0 0 0"
                     SelectionMode="Single"
                     ItemsSource="{x:Bind RowerItem.Status}">
@@ -134,6 +134,14 @@
                     </ListView.ItemTemplate>
                 </ListView>
 
+                <TextBlock
+                    Margin="{StaticResource MediumTopMargin}"
+                    Text="Zaktualizuj status zamówienia"
+                    Style="{StaticResource DetailSubTitleStyle}" />
+                <CheckBox x:Name="s1CheckName" IsChecked="{x:Bind CheckS1}" Content="{x:Bind s1}" Checked="CheckBox_CheckedS1" />
+                <CheckBox x:Name="s2CheckName" IsChecked="{x:Bind CheckS2}" Content="{x:Bind s2}" Checked="CheckBox_CheckedS2" />
+                <CheckBox x:Name="s3CheckName" IsChecked="{x:Bind CheckS3}" Content="{x:Bind s3}" Checked="CheckBox_CheckedS3" />
+                <CheckBox x:Name="s4CheckName" IsChecked="{x:Bind CheckS4}" Content="{x:Bind s4}" />
             </StackPanel>
         </StackPanel>
     </ScrollViewer>

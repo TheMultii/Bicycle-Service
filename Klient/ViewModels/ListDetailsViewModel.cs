@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using IdGen;
 using Klient.Contracts.ViewModels;
@@ -97,13 +98,15 @@ public class ListDetailsViewModel : ObservableRecipient, INavigationAware {
             List<Rower> _orders = await serwisRowerowyApi.ApiServiceBicyclesGetAsync();
 
             List<RowerExtended> _ordersExtended = new();
-            foreach (var order in _orders) {
+            foreach (Rower order in _orders) {
                 DateTime createdAt = DateTime.MinValue;
 
                 try {
                     Id id = generator.FromId(order.Uid ?? 0);
                     createdAt = id.DateTimeOffset.ToLocalTime().DateTime;
                 } catch (Exception) { }
+
+                order.Status.Reverse();
 
                 _ordersExtended.Add(new RowerExtended {
                     Uid = order.Uid,

@@ -27,8 +27,8 @@
                     Grid.Column="1"
                     Margin="{StaticResource SmallLeftMargin}"
                     VerticalAlignment="Center">
-                    <TextBlock Text="{x:Bind OwnerString}" Style="{StaticResource ListTitleStyle}" />
-                    <TextBlock Text="{x:Bind BicycleString}" Style="{StaticResource ListSubTitleStyle}" />
+                    <TextBlock Text="{x:Bind BicycleString}" Style="{StaticResource ListTitleStyle}" />
+                    <TextBlock Text="{x:Bind NewestStatus}" Style="{StaticResource ListSubTitleStyle}" />
                 </StackPanel>
             </Grid>
         </DataTemplate>

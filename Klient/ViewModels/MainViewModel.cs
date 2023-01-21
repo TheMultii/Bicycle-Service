@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 using Klient.Core.Api;
 using Klient.Core.Model;
 using Newtonsoft.Json;
+using Klient.Helpers;
 
 namespace Klient.ViewModels;
 
@@ -117,19 +118,6 @@ public class MainViewModel : ObservableRecipient {
         } catch (Exception) { }
     }
 
-    private static async Task<ContentDialogResult> DisplayError(object sender, string errorMessage, string errorTitle = "Błąd", string errorButtonText = "OK") {
-        ContentDialog dialog = new() {
-            XamlRoot = ((Button)sender).XamlRoot,
-            Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-            Title = errorTitle,
-            Content = errorMessage,
-            PrimaryButtonText = errorButtonText,
-            DefaultButton = ContentDialogButton.Primary
-        };
-
-        return await dialog.ShowAsync();
-    }
-
     internal async void RegisterButtonClick(object sender, RoutedEventArgs e) {
         string errorMessage = string.Empty;
         bool displayError = false;
@@ -142,7 +130,7 @@ public class MainViewModel : ObservableRecipient {
             displayError = true;
         }
         if (displayError) {
-            await DisplayError(sender, errorMessage);
+            await DisplayError.show(sender, errorMessage);
             return;
         }
         IsLoading = true;
@@ -169,7 +157,7 @@ public class MainViewModel : ObservableRecipient {
         }
 
         if (displayError) {
-            await DisplayError(sender, errorMessage);
+            await DisplayError.show(sender, errorMessage);
             return;
         }
 
@@ -213,7 +201,7 @@ public class MainViewModel : ObservableRecipient {
                 IsLoading = false;
             }
         } catch (Exception) {
-            await DisplayError(sender, "Niepoprawne dane");
+            await DisplayError.show(sender, "Niepoprawne dane");
         }
         IsLoading = false;
     }

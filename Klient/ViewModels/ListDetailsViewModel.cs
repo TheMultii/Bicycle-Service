@@ -41,7 +41,9 @@ public class ListDetailsViewModel : ObservableRecipient, INavigationAware {
     private RowerExtended? _selected;
     public RowerExtended? Selected {
         get => _selected;
-        set => SetProperty(ref _selected, value);
+        set {
+            SetProperty(ref _selected, value);
+        }
     }
 
     public ObservableCollection<RowerExtended> AllUsersOrders { get; private set; } = new();

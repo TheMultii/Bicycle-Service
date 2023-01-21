@@ -6,6 +6,7 @@ using Klient.Contracts.ViewModels;
 using Klient.Core.Api;
 using Klient.Core.Model;
 using Klient.Core.Models;
+using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json;
 
 namespace Klient.ViewModels;
@@ -48,6 +49,21 @@ public class ListDetailsViewModel : ObservableRecipient, INavigationAware {
 
     public ObservableCollection<RowerExtended> AllUsersOrders { get; private set; } = new();
 
+    public void UpdateAllUsersOrders(RowerExtended item) {
+        var index = -1;
+        for (int i = 0; i < AllUsersOrders.Count; i++) {
+            if (AllUsersOrders[i].Uid == item.Uid) {
+                index = i;
+                break;
+            }
+        }
+        if (index != -1) {
+            Selected = item;
+            AllUsersOrders[index] = item;
+            Selected = item;
+        }
+    }
+    
     public ListDetailsViewModel() {
         try {
             using StreamReader reader = new(new FileStream(myDataPath, FileMode.Open, FileAccess.ReadWrite));

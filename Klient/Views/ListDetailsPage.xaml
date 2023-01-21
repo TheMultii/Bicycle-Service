@@ -7,7 +7,7 @@
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:views="using:Klient.Views"
     xmlns:behaviors="using:Klient.Behaviors"
-    xmlns:models="using:Klient.Core.Models"
+    xmlns:models="using:Klient.Core.Models" xmlns:lcl="using:Klient.Helpers"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
     <Page.Resources>
@@ -40,7 +40,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="NoSelectionContentTemplate">
-            <Grid>
+            <Grid Visibility="{Binding IsLoading, ConverterParameter='inverse', Converter={StaticResource boolToVisibilityConverter}}">
                 <TextBlock
                     x:Uid="ListDetails_NoSelection"
                     HorizontalAlignment="Center"
@@ -58,6 +58,7 @@
                     Text="{Binding}" />
             </Grid>
         </DataTemplate>
+
         <DataTemplate x:Key="MinimalListHeaderTemplate">
             <Grid Height="40">
                 <TextBlock
@@ -67,23 +68,35 @@
                     Text="{Binding}" />
             </Grid>
         </DataTemplate>
+
+        <ResourceDictionary x:Key="siema">
+            <lcl:BoolToVisibilityConverter x:Key="boolToVisibilityConverter" />
+        </ResourceDictionary>
     </Page.Resources>
 
-    <Grid x:Name="ContentArea">
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup>
-                <VisualState>
-                    <VisualState.StateTriggers>
-                        <!--641 is the default CompactModeThresholdWidth in NavigationView -->
-                        <AdaptiveTrigger MinWindowWidth="641" />
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="ListDetailsViewControl.ListHeaderTemplate" Value="{StaticResource ListHeaderTemplate}" />
-                    </VisualState.Setters>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
-        <controls:ListDetailsView
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+
+        <ProgressBar Grid.Row="0" VerticalAlignment="Top" Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" IsIndeterminate="True" ShowPaused="False" ShowError="False" />
+
+        <Grid Grid.Row="1" x:Name="ContentArea">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup>
+                    <VisualState>
+                        <VisualState.StateTriggers>
+                            <!--641 is the default CompactModeThresholdWidth in NavigationView -->
+                            <AdaptiveTrigger MinWindowWidth="641" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Target="ListDetailsViewControl.ListHeaderTemplate" Value="{StaticResource ListHeaderTemplate}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+            <controls:ListDetailsView
             x:Uid="ListDetails"
             x:Name="ListDetailsViewControl"
             BackButtonBehavior="Manual"
@@ -96,5 +109,6 @@
             NoSelectionContentTemplate="{StaticResource NoSelectionContentTemplate}"
             SelectedItem="{x:Bind ViewModel.Selected, Mode=TwoWay}"
             ViewStateChanged="OnViewStateChanged"/>
+        </Grid>
     </Grid>
 </Page>

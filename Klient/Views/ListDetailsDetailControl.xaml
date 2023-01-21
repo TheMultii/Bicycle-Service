@@ -29,7 +29,7 @@
                 <TextBlock
                     Margin="{StaticResource SmallLeftMargin}"
                     VerticalAlignment="Center"
-                    Text="{x:Bind RowerItem.BicycleString, Mode=OneWay}"
+                    x:Name="RI_BicycleString"
                     Style="{ThemeResource TitleTextBlockStyle}" />
             </StackPanel>
             <StackPanel Padding="0,15,0,0">
@@ -44,12 +44,14 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
+                    <ProgressBar Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Top" x:Name="LoadingIndicator" IsIndeterminate="True" ShowPaused="False" ShowError="False" />
+
                     <StackPanel Grid.Row="0" Grid.Column="0">
                         <TextBlock
                         Margin="{StaticResource SmallTopMargin}"
                         Text="UID"
                         Style="{StaticResource DetailSubTitleStyle}" />
-                        <TextBlock IsTextSelectionEnabled="True" Text="{x:Bind RowerItem.Uid, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
+                        <TextBlock x:Name="RI_UID" IsTextSelectionEnabled="True" Style="{StaticResource DetailBodyBaseMediumStyle}" />
                     </StackPanel>
 
                     <StackPanel Grid.Row="0" Grid.Column="2">
@@ -57,7 +59,7 @@
                         Margin="{StaticResource SmallTopMargin}"
                         Text="Status"
                         Style="{StaticResource DetailSubTitleStyle}" />
-                        <TextBlock IsTextSelectionEnabled="True" Text="{x:Bind RowerItem.NewestStatus, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
+                        <TextBlock x:Name="RI_NewestStatus" IsTextSelectionEnabled="True" Style="{StaticResource DetailBodyBaseMediumStyle}" />
                     </StackPanel>
 
                     <StackPanel Grid.Row="1" Grid.Column="0">
@@ -65,7 +67,7 @@
                         Margin="{StaticResource SmallTopMargin}"
                         Text="Data zamówienia"
                         Style="{StaticResource DetailSubTitleStyle}" />
-                        <TextBlock IsTextSelectionEnabled="True" Text="{x:Bind RowerItem.CreatedAt, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
+                        <TextBlock x:Name="RI_CreatedAt" IsTextSelectionEnabled="True" Style="{StaticResource DetailBodyBaseMediumStyle}" />
                     </StackPanel>
 
                     <StackPanel Grid.Row="1" Grid.Column="2">
@@ -73,7 +75,7 @@
                         Margin="{StaticResource SmallTopMargin}"
                         Text="Wartość zamówienia"
                         Style="{StaticResource DetailSubTitleStyle}" />
-                        <TextBlock IsTextSelectionEnabled="True" Text="{x:Bind RowerItem.Price, Mode=OneWay, ConverterParameter='false', Converter={StaticResource doubleToPriceStringConverter}}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
+                        <TextBlock x:Name="RI_Price" IsTextSelectionEnabled="True" Style="{StaticResource DetailBodyBaseMediumStyle}" />
                     </StackPanel>
                 </Grid>
 
@@ -94,13 +96,13 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Marka" />
-                    <TextBlock IsTextSelectionEnabled="True" Grid.Row="0" Grid.Column="2" Text="{x:Bind RowerItem.Brand, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
+                    <TextBlock x:Name="RI_Brand" IsTextSelectionEnabled="True" Grid.Row="0" Grid.Column="2" Style="{StaticResource DetailBodyBaseMediumStyle}" />
 
                     <TextBlock Grid.Row="1" Margin="0 6 0 6" Grid.Column="0" Text="Model" />
-                    <TextBlock IsTextSelectionEnabled="True" Grid.Row="1" Margin="0 6 0 6" Grid.Column="2" Text="{x:Bind RowerItem.Model, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
+                    <TextBlock x:Name="RI_Model" IsTextSelectionEnabled="True" Grid.Row="1" Margin="0 6 0 6" Grid.Column="2" Style="{StaticResource DetailBodyBaseMediumStyle}" />
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Typ" />
-                    <TextBlock IsTextSelectionEnabled="True" Grid.Row="2" Grid.Column="2" Text="{x:Bind RowerItem.Type, Mode=OneWay}" Style="{StaticResource DetailBodyBaseMediumStyle}" />
+                    <TextBlock x:Name="RI_Type" IsTextSelectionEnabled="True" Grid.Row="2" Grid.Column="2" Style="{StaticResource DetailBodyBaseMediumStyle}" />
                 </Grid>
 
                 <TextBlock
@@ -111,7 +113,7 @@
                     x:Name="lViewContainer"
                     Margin="-5 0 0 0"
                     SelectionMode="Single"
-                    ItemsSource="{x:Bind RowerItem.Status}">
+                    ItemsSource="{x:Bind RI.Status}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="0 5 0 5">

@@ -1,12 +1,15 @@
 ﻿<Application
     x:Class="Klient.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="using:Klient.Converters">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Klient.Helpers">
     <Application.Resources>
         <ResourceDictionary>
             <!-- converters -->
             <local:StringLengthToVisibilityConverter x:Key="stringLengthToVisibilityConverter"/>
             <local:StringEmptyToVisibilityConverter x:Key="stringEmptyToVisibilityConverter"/>
+            <local:BoolToLoadingMarginConverter x:Key="boolToLoadingMarginConveter" />
+            <local:BoolToVisibilityConverter x:Key="boolToVisibilityConverter" />
             
             <!-- resource dictionary -->
             <ResourceDictionary.MergedDictionaries>

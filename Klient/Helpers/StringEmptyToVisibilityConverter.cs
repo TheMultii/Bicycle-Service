@@ -1,7 +1,7 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 
-namespace Klient.Converters {
+namespace Klient.Helpers {
     public class StringEmptyToVisibilityConverter : IValueConverter {
         public object Convert(object value, Type targetType, object parameter, string language) {
             if (value is string str) {

@@ -5,7 +5,9 @@ using Klient.Core.Models;
 using Klient.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Newtonsoft.Json;
+using System.Globalization;
 
 namespace Klient.Views;
 
@@ -15,13 +17,18 @@ public sealed partial class ListDetailsDetailControl : UserControl {
         set => SetValue(RowerItemProperty, value);
     }
     
+    public RowerExtended? RI;
+
+    public bool IsLoading { set => LoadingIndicator.Visibility = value ? Visibility.Visible : Visibility.Collapsed; }
+
     internal void RUN() {
-        RowerExtended? value = RowerItem;
-        if (value != null) {
-            CheckS1 = value.Status.Where(x => x.Status == s1).Any();
-            CheckS2 = value.Status.Where(x => x.Status == s2).Any();
-            CheckS3 = value.Status.Where(x => x.Status == s3).Any();
-            lViewContainer.ItemsSource = value.Status;
+        RI = GetValue(RowerItemProperty) as RowerExtended;
+        IsLoading = false;
+        if (RI != null) {
+            CheckS1 = RI.Status.Where(x => x.Status == s1).Any();
+            CheckS2 = RI.Status.Where(x => x.Status == s2).Any();
+            CheckS3 = RI.Status.Where(x => x.Status == s3).Any();
+            lViewContainer.ItemsSource = RI.Status;
         } else {
             CheckS1 = false;
             CheckS2 = false;
@@ -35,12 +42,23 @@ public sealed partial class ListDetailsDetailControl : UserControl {
         s2CheckName.IsEnabled = !CheckS1 && !CheckS2 && CheckS3;
         s3CheckName.IsEnabled = !CheckS1 && !CheckS2 && !CheckS3;
         s4CheckName.IsEnabled = false;
+
+        RI_BicycleString.Text = RI?.BicycleString;
+        RI_UID.Text = RI?.Uid.ToString();
+        RI_NewestStatus.Text = RI?.NewestStatus;
+        RI_CreatedAt.Text = RI?.CreatedAt.ToString();
+        RI_Price.Text = (string)doubleToPriceStringConverter.Convert(RI?.Price, null, 1, null);
+        RI_Brand.Text = RI?.Brand;
+        RI_Model.Text = RI?.Model;
+        RI_Type.Text = RI?.Type;
     }
 
     private static readonly DateTime epoch = new(2015, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     private static readonly IdStructure structure = new(41, 10, 12);
     private static readonly IdGeneratorOptions options = new(structure, new DefaultTimeSource(epoch));
     private static readonly IdGenerator generator = new(0, options);
+
+    private static readonly DoubleToPriceStringConverter doubleToPriceStringConverter = new();
 
     public readonly string s1 = "Zrealizowane";
     public readonly string s2 = "Oczekujące";
@@ -70,6 +88,7 @@ public sealed partial class ListDetailsDetailControl : UserControl {
 
     public ListDetailsDetailControl() {
         InitializeComponent();
+        RI = RowerItem;
 
         try {
             using BinaryReader reader = new(new FileStream(tokenPath, FileMode.Open, FileAccess.ReadWrite));
@@ -97,9 +116,11 @@ public sealed partial class ListDetailsDetailControl : UserControl {
                 await DisplayError.show(sender, "Potrzebujsz uprawnień \"Service\", by móc zmienić status zamówienia na \"W trakcie realizacji\".", "Niewystarczające uprawnienia");
                 return;
             }
-            if (RowerItem?.Status.Where(s => s.Status == s3).Any() ?? false) return;
-            
+            if (RI?.Status.Where(s => s.Status == s3).Any() ?? false) return;
+
+            IsLoading = true;
             await UpdateOrderStatusMethod(cb);
+            IsLoading = false;
         }
     }
 
@@ -110,9 +131,11 @@ public sealed partial class ListDetailsDetailControl : UserControl {
                 await DisplayError.show(sender, "Potrzebujsz uprawnień \"Service\", by móc zmienić status zamówienia na \"Oczekujące\".", "Niewystarczające uprawnienia");
                 return;
             }
-            if (RowerItem?.Status.Where(s => s.Status == s2).Any() ?? false) return;
-            
+            if (RI?.Status.Where(s => s.Status == s2).Any() ?? false) return;
+
+            IsLoading = true;
             await UpdateOrderStatusMethod(cb);
+            IsLoading = false;
         }
     }
 
@@ -123,24 +146,26 @@ public sealed partial class ListDetailsDetailControl : UserControl {
                 await DisplayError.show(sender, "Potrzebujesz uprawnień \"Shop\", by móc zmienić status zamówienia na \"Zrealizowane\".", "Niewystarczające uprawnienia");
                 return;
             }
-            if (RowerItem?.Status.Where(s => s.Status == s1).Any() ?? false) return;
-            
+            if (RI?.Status.Where(s => s.Status == s1).Any() ?? false) return;
+
+            IsLoading = true;
             await UpdateOrderStatusMethod(cb);
+            IsLoading = false;
         }
     }
 
     private async Task UpdateOrderStatusMethod(CheckBox cb) {
         ISerwisRowerowyApi serwisRowerowyApi = new SerwisRowerowyApi();
-        await serwisRowerowyApi.ApiServiceOrderUidStatusPutAsync(RowerItem?.Uid ?? 0, new RowerStatusDTO() {
+        await serwisRowerowyApi.ApiServiceOrderUidStatusPutAsync(RI?.Uid ?? 0, new RowerStatusDTO() {
             Status = cb.Content.ToString()
         });
 
-        Rower order = await serwisRowerowyApi.ApiServiceBicyclesUidGetAsync(RowerItem?.Uid ?? 0);
+        Rower order = await serwisRowerowyApi.ApiServiceBicyclesUidGetAsync(RI?.Uid ?? 0);
 
-        Id id = generator.FromId(RowerItem?.Uid ?? 0);
+        Id id = generator.FromId(RI?.Uid ?? 0);
         DateTime cAt = id.DateTimeOffset.ToLocalTime().DateTime;
         order.Status.Reverse();
-        RowerItem = new RowerExtended {
+        RI = new RowerExtended {
             Uid = order.Uid,
             Owner = order.Owner,
             Brand = order.Brand,
@@ -151,6 +176,35 @@ public sealed partial class ListDetailsDetailControl : UserControl {
             CreatedAt = cAt
         };
 
-        lViewContainer.ItemsSource = RowerItem.Status;
+        RI_BicycleString.Text = RI?.BicycleString;
+        RI_UID.Text = RI?.Uid.ToString();
+        RI_NewestStatus.Text = RI?.NewestStatus;
+        RI_CreatedAt.Text = RI?.CreatedAt.ToString();
+        DoubleToPriceStringConverter doubleToPriceStringConverter = new();
+        RI_Price.Text = (string)doubleToPriceStringConverter.Convert(RI?.Price, null, 1, null);
+        RI_Brand.Text = RI?.Brand;
+        RI_Model.Text = RI?.Model;
+        RI_Type.Text = RI?.Type;
+        lViewContainer.ItemsSource = RI?.Status;
+
+        CheckS1 = RI.Status.Where(x => x.Status == s1).Any();
+        CheckS2 = RI.Status.Where(x => x.Status == s2).Any();
+        CheckS3 = RI.Status.Where(x => x.Status == s3).Any();
+        s1CheckName.IsChecked = CheckS1;
+        s2CheckName.IsChecked = CheckS2;
+        s3CheckName.IsChecked = CheckS3;
+        s4CheckName.IsChecked = CheckS4;
+        s1CheckName.IsEnabled = !CheckS1 && CheckS2 && CheckS3;
+        s2CheckName.IsEnabled = !CheckS1 && !CheckS2 && CheckS3;
+        s3CheckName.IsEnabled = !CheckS1 && !CheckS2 && !CheckS3;
+        s4CheckName.IsEnabled = false;
+
+        var parent = VisualTreeHelper.GetParent(this);
+        while (parent != null && parent is not ListDetailsPage) {
+            parent = VisualTreeHelper.GetParent(parent);
+        }
+        if (parent is ListDetailsPage page) {
+            page.UpdateAllUsersOrders(RI);
+        }
     }
 }

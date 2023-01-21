@@ -130,7 +130,7 @@
     <value>Wybierz element z listy</value>
   </data>
   <data name="Shell_ListDetails.Content" xml:space="preserve">
-    <value>Panel zarządzania zamówieniami</value>
+    <value>Zarządzanie zamówieniami</value>
   </data>
   <data name="Shell_ContentGrid.Content" xml:space="preserve">
     <value>ContentGrid</value>

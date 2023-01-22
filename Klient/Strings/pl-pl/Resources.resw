@@ -153,9 +153,6 @@
   <data name="BrowserForwardButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Przejdź do przodu</value>
   </data>
-  <data name="WebView_Reload.Content" xml:space="preserve">
-    <value>Odśwież</value>
-  </data>
   <data name="ReloadButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Odśwież</value>
   </data>
@@ -223,5 +220,11 @@
   </data>
   <data name="DataGridPage_CreateAnOrder.Content" xml:space="preserve">
     <value>Złóż zamówienie</value>
+  </data>
+  <data name="ListDetailsPage_Refresh.Content" xml:space="preserve">
+    <value>Odśwież</value>
+  </data>
+  <data name="WebView_Reload.Content" xml:space="preserve">
+    <value>Odśwież</value>
   </data>
 </root>

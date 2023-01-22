@@ -34,7 +34,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="DetailsTemplate">
-            <Grid>
+            <Grid VerticalAlignment="Top" Margin="0 0 0 0">
                 <views:ListDetailsDetailControl RowerItem="{Binding}" />
             </Grid>
         </DataTemplate>
@@ -69,7 +69,7 @@
             </Grid>
         </DataTemplate>
 
-        <ResourceDictionary x:Key="siema">
+        <ResourceDictionary x:Key="LDPres">
             <lcl:BoolToVisibilityConverter x:Key="boolToVisibilityConverter" />
         </ResourceDictionary>
     </Page.Resources>
@@ -80,35 +80,55 @@
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
 
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="LDRP.Visibility" Value="Collapsed" />
+                    </VisualState.Setters>
+                </VisualState>
+                
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <!--641 is the default CompactModeThresholdWidth in NavigationView -->
+                        <AdaptiveTrigger MinWindowWidth="641" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="ListDetailsViewControl.ListHeaderTemplate" Value="{StaticResource ListHeaderTemplate}" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
         <ProgressBar Grid.Row="0" VerticalAlignment="Top" Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" IsIndeterminate="True" ShowPaused="False" ShowError="False" />
 
         <Grid Grid.Row="1" x:Name="ContentArea">
-            <VisualStateManager.VisualStateGroups>
-                <VisualStateGroup>
-                    <VisualState>
-                        <VisualState.StateTriggers>
-                            <!--641 is the default CompactModeThresholdWidth in NavigationView -->
-                            <AdaptiveTrigger MinWindowWidth="641" />
-                        </VisualState.StateTriggers>
-                        <VisualState.Setters>
-                            <Setter Target="ListDetailsViewControl.ListHeaderTemplate" Value="{StaticResource ListHeaderTemplate}" />
-                        </VisualState.Setters>
-                    </VisualState>
-                </VisualStateGroup>
-            </VisualStateManager.VisualStateGroups>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+
+            <Button Width="165" Margin="0 0 0 10" Visibility="{Binding IsLoading, ConverterParameter='inverse', Converter={StaticResource boolToVisibilityConverter}}" HorizontalAlignment="Right" Grid.Row="0" x:Uid="ListDetailsPage_Refresh" x:Name="LDRP" />
+
             <controls:ListDetailsView
-            x:Uid="ListDetails"
-            x:Name="ListDetailsViewControl"
-            BackButtonBehavior="Manual"
-            Background="Transparent"
-            BorderBrush="Transparent"
-            DetailsTemplate="{StaticResource DetailsTemplate}"
-            ItemsSource="{x:Bind ViewModel.AllUsersOrders}"
-            ItemTemplate="{StaticResource ItemTemplate}"
-            ListHeaderTemplate="{StaticResource MinimalListHeaderTemplate}"
-            NoSelectionContentTemplate="{StaticResource NoSelectionContentTemplate}"
-            SelectedItem="{x:Bind ViewModel.Selected, Mode=TwoWay}"
-            ViewStateChanged="OnViewStateChanged"/>
+                Grid.Row="1"
+                Margin="0 -10 0 0"
+                x:Uid="ListDetails"
+                x:Name="ListDetailsViewControl"
+                BackButtonBehavior="Manual"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                DetailsTemplate="{StaticResource DetailsTemplate}"
+                ItemsSource="{x:Bind ViewModel.AllUsersOrders}"
+                ItemTemplate="{StaticResource ItemTemplate}"
+                ListHeaderTemplate="{StaticResource MinimalListHeaderTemplate}"
+                NoSelectionContentTemplate="{StaticResource NoSelectionContentTemplate}"
+                SelectedItem="{x:Bind ViewModel.Selected, Mode=TwoWay}"
+                ViewStateChanged="OnViewStateChanged"/>
         </Grid>
     </Grid>
 </Page>

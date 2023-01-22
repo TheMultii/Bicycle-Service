@@ -187,9 +187,10 @@ public sealed partial class ListDetailsDetailControl : UserControl {
         RI_Type.Text = RI?.Type;
         lViewContainer.ItemsSource = RI?.Status;
 
-        CheckS1 = RI.Status.Where(x => x.Status == s1).Any();
-        CheckS2 = RI.Status.Where(x => x.Status == s2).Any();
-        CheckS3 = RI.Status.Where(x => x.Status == s3).Any();
+        if (RI == null) return;
+        CheckS1 = RI.Status.Any(x => x.Status == s1);
+        CheckS2 = RI.Status.Any(x => x.Status == s2);
+        CheckS3 = RI.Status.Any(x => x.Status == s3);
         s1CheckName.IsChecked = CheckS1;
         s2CheckName.IsChecked = CheckS2;
         s3CheckName.IsChecked = CheckS3;

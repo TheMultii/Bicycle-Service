@@ -108,6 +108,7 @@ public class MainViewModel : ObservableRecipient {
                 File.Delete(tokenPath);
                 File.Delete(tokenExpirePath);
                 File.Delete(myDataPath);
+                DisplayNotification.Show("Twój token wygasł", "Zaloguj się ponownie.");
                 return;
             }
 

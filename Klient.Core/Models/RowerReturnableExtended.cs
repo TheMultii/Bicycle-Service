@@ -5,7 +5,7 @@ namespace Klient.Core.Models {
         public DateTime CreatedAt { get; set; }
 
         public string NewestStatus {
-            get => Status.FirstOrDefault() ?? "Brak statusu";
+            get => Status.LastOrDefault() ?? "Brak statusu";
         }
         public int StatusCount {
             get => Status.Count;

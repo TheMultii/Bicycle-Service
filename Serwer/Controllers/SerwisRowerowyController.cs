@@ -22,11 +22,11 @@ namespace Serwer.Controllers {
             
             options = new(structure, new DefaultTimeSource(epoch));
             generator = new(0, options);
-            
-            _connection.Open();
         }
 
         private static User GetUserByUID(long uid) {
+            bool is_open = _connection.State == System.Data.ConnectionState.Open;
+            if (!is_open) _connection.Open();
             SqliteCommand command = _connection.CreateCommand();
             command.CommandText = "SELECT uid, name, surname, account_type FROM Users WHERE uid = @uid";
             command.Parameters.AddWithValue("@uid", uid);
@@ -36,6 +36,7 @@ namespace Serwer.Controllers {
                 string user_name = reader.GetString(1);
                 string user_surname = reader.GetString(2);
                 string user_accountType = reader.GetString(3);
+                if (!is_open) _connection.Close();
 
                 return new User {
                     UID = user_uid.ToString(),
@@ -47,10 +48,6 @@ namespace Serwer.Controllers {
             throw new Exception("User not found");
         }
 
-        ~SerwisRowerowyController() {
-            _connection.Close();
-        }
-
         /// <summary>
         /// Get all bikes
         /// </summary>
@@ -60,7 +57,8 @@ namespace Serwer.Controllers {
         public ActionResult<IEnumerable<Rower>> GetBicycles() {
             string permission = _userService.GetRole().ToLower();
             if (permission != "service" && permission != "shop") return Unauthorized();
-            
+
+            _connection.Open();
             var command = _connection.CreateCommand();
             command.CommandText = "SELECT * FROM Bicycles";
             var reader = command.ExecuteReader();
@@ -89,6 +87,7 @@ namespace Serwer.Controllers {
 
                 bicycles.Add(new Rower(uid, owner, brand, model, type, price, status));
             }
+            _connection.Close();
             return Ok(bicycles);
         }
 
@@ -103,7 +102,8 @@ namespace Serwer.Controllers {
         public ActionResult<Rower> GetBicycle(long uid) {
             string permission = _userService.GetRole().ToLower();
             if (permission != "service" && permission != "shop") return Unauthorized();
-            
+
+            _connection.Open();
             var command = _connection.CreateCommand();
             command.CommandText = "SELECT * FROM Bicycles WHERE uid = @uid";
             command.Parameters.AddWithValue("@uid", uid);
@@ -128,8 +128,10 @@ namespace Serwer.Controllers {
                     string status_name = status_reader.GetString(3);
                     status.Add(new RowerStatus(status_uid, changed_by, status_name));
                 }
+                _connection.Close();
                 return Ok(new Rower(uid, owner, brand, model, type, price, status));
             }
+            _connection.Close();
             return NotFound();
         }
 
@@ -149,6 +151,7 @@ namespace Serwer.Controllers {
             }
 
             string user_name = _userService.GetName();
+            _connection.Open();
             SqliteCommand command = _connection.CreateCommand();
             command.CommandText = "SELECT uid FROM Users WHERE login = @name";
             command.Parameters.AddWithValue("@name", user_name);
@@ -178,6 +181,7 @@ namespace Serwer.Controllers {
                 command.Parameters.AddWithValue("@changed_by", user_uid);
                 command.Parameters.AddWithValue("@status", status[0]);
                 command.ExecuteNonQuery();
+                _connection.Close();
 
                 return Ok(new RowerReturnable {
                     UID = uid.ToString(),
@@ -189,6 +193,7 @@ namespace Serwer.Controllers {
                     Status = status
                 });
             }
+            _connection.Close();
             return NotFound();
         }
 
@@ -204,6 +209,7 @@ namespace Serwer.Controllers {
             string permission = _userService.GetRole().ToLower();
             if (permission != "service" && permission != "shop") return Unauthorized();
 
+            _connection.Open();
             SqliteCommand command = _connection.CreateCommand();
             command.CommandText =
                 @"
@@ -226,6 +232,7 @@ namespace Serwer.Controllers {
             while (reader.Read()) {
                 status.Add(reader.GetString(0));
             }
+            _connection.Close();
 
             RowerReturnable returnable = new() {
                 UID = uid.ToString(),
@@ -257,6 +264,7 @@ namespace Serwer.Controllers {
             List<string> validStatuses = new() { "Zrealizowane", "Oczekujące", "W trakcie realizacji", "Nowe zamówienie" };
             if (!validStatuses.Contains(request.Status)) return BadRequest("Invalid status");
 
+            _connection.Open();
             SqliteCommand command = _connection.CreateCommand();
             command.CommandText = "SELECT status FROM OrderStatuses WHERE bicycle = @uid";
             command.Parameters.AddWithValue("@uid", uid);
@@ -295,6 +303,7 @@ namespace Serwer.Controllers {
                     type = reader.GetString(2);
                     price = reader.GetDouble(3);
                 } else {
+                    _connection.Close();
                     return NotFound();
                 }
 
@@ -306,8 +315,10 @@ namespace Serwer.Controllers {
                     Price = price,
                     Status = status
                 };
+                _connection.Close();
                 return Ok(returnable);
             }
+            _connection.Close();
             return NotFound();
         }
 
@@ -321,6 +332,7 @@ namespace Serwer.Controllers {
             string _name = _userService.GetName();
             List<RowerReturnable> returnable = new();
 
+            _connection.Open();
             SqliteCommand command = _connection.CreateCommand();
             command.CommandText = "SELECT uid FROM Users WHERE login = @name";
             command.Parameters.AddWithValue("@name", _name);
@@ -360,6 +372,7 @@ namespace Serwer.Controllers {
                     returnable.Add(rower);
                 }
             }
+            _connection.Close();
             return Ok(returnable);
         }
 

@@ -28,12 +28,6 @@ namespace Serwer.Controllers {
 
             options = new(structure, new DefaultTimeSource(epoch));
             generator = new(0, options);
-
-            _connection.Open();
-        }
-
-        ~UserController() {
-            _connection.Close();
         }
 
         /// <summary>
@@ -58,6 +52,8 @@ namespace Serwer.Controllers {
 
             CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
+
+            _connection.Open();
             SqliteCommand command = _connection.CreateCommand();
             command.CommandText =
                 @"
@@ -96,6 +92,7 @@ namespace Serwer.Controllers {
                 Surname = request.Surname,
                 AccountType = "Customer"
             };
+            _connection.Close();
 
             return Ok(CreateToken(user));
         }
@@ -107,6 +104,7 @@ namespace Serwer.Controllers {
         /// <returns>JWT Authorization Token</returns>
         [HttpPost("login")]
         public ActionResult<string> Login(UserLoginDTO request) {
+            _connection.Open();
             SqliteCommand sqliteCommand = _connection.CreateCommand();
             sqliteCommand.CommandText =
                 @"
@@ -132,7 +130,8 @@ namespace Serwer.Controllers {
             if (!VerifyPasswordHash(request.Password, PasswordHash, PasswordSalt)) {
                 return BadRequest("Wrong password");
             }
-            
+            _connection.Close();
+
             return Ok(CreateToken(user));
          }
 
@@ -148,6 +147,7 @@ namespace Serwer.Controllers {
                 return Unauthorized();
             }
 
+            _connection.Open();
             SqliteCommand command = _connection.CreateCommand();
             command.CommandText = "SELECT uid from Users WHERE login = @name";
             command.Parameters.AddWithValue("@name", _userService.GetName());
@@ -162,6 +162,7 @@ namespace Serwer.Controllers {
                 Username = name,
                 Permission = role
             };
+            _connection.Close();
 
             return Ok(userMyData);
         }
@@ -183,6 +184,7 @@ namespace Serwer.Controllers {
             }
 
             string username = _userService.GetName();
+            _connection.Open();
             SqliteCommand sqliteCommand = _connection.CreateCommand();
             sqliteCommand.CommandText =
                 @"
@@ -200,6 +202,7 @@ namespace Serwer.Controllers {
                 Login = reader.GetString(1),
                 AccountType = reader.GetString(2)
             };
+            _connection.Close();
 
             // I should probably use refreshToken field to make sure (or make life harder for the thief)
             // that I am renewing the token for the right person.

@@ -151,8 +151,7 @@ public class MainViewModel : ObservableRecipient {
                 IsLoading = false;
                 return;
             }
-            
-            await PostLoginRegisterFunction(_token_response, userApi);
+            await PostLoginRegisterFunction(_token_response, userApi, "register");
             IsLoading = false;
 
         } catch (Exception ex) {
@@ -164,7 +163,7 @@ public class MainViewModel : ObservableRecipient {
         IsLoading = false;
     }
 
-    private async Task PostLoginRegisterFunction(string _token_response, IUserApi userApi) {
+    private async Task PostLoginRegisterFunction(string _token_response, IUserApi userApi, string action) {
         Token = _token_response.Replace("\"", string.Empty);
         DateTime tomorrow = DateTime.Now.AddDays(1);
         TokenExpireDateString = $"Twój token wygaśnie {tomorrow:dd.MM.yyyy HH:mm:ss}.";
@@ -188,6 +187,15 @@ public class MainViewModel : ObservableRecipient {
         using BinaryWriter writer2 = new(fs2);
         using StreamWriter writer3 = new(fs3);
 
+        writer.Write(Token);
+        writer2.Write(tomorrow.ToString("dd.MM.yyyy HH:mm:ss"));
+        
+        if (action == "register") {
+            DisplayNotification.Show("Pomyślnie zarejestrowano", $"Utworzono konto dla \"{RegisterLogin}\"");
+        } else {
+            DisplayNotification.Show("Pomyślnie zalogowano", TokenExpireDateString);
+        }
+
         RegisterLogin = "";
         RegisterName = "";
         RegisterSurname = "";
@@ -195,9 +203,6 @@ public class MainViewModel : ObservableRecipient {
         RegisterPasswordConfirm = "";
         Login = "";
         Password = "";
-
-        writer.Write(Token);
-        writer2.Write(tomorrow.ToString("dd.MM.yyyy HH:mm:ss"));
 
         if (myData != null) {
             await writer3.WriteAsync(myDataJSON);
@@ -229,7 +234,7 @@ public class MainViewModel : ObservableRecipient {
         try {
             string _token_response = await userApi.ApiUserLoginPostAsync(userLoginDTO);
             if (_token_response != null) {
-                await PostLoginRegisterFunction(_token_response, userApi);
+                await PostLoginRegisterFunction(_token_response, userApi, "login");
                 IsLoading = false;
             }
         } catch (Exception) {

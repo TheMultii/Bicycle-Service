@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using IdGen;
+using Klient.Contracts.Services;
 using Klient.Contracts.ViewModels;
 using Klient.Core.Api;
 using Klient.Core.Client;
@@ -9,6 +10,7 @@ using Klient.Core.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json;
+using Klient.Helpers;
 
 namespace Klient.ViewModels;
 
@@ -219,6 +221,8 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
             });
         } catch (Exception) { }
 
+        DisplayNotification.Show("Dodano zamówienie", $"Nadano status \"Nowe zamówienie\" dla {NewOrderBrand} {NewOrderModel}");
+
         IsPlacingAnOrder = false;
         AllowPlacingAnOrder = false;
         NewOrderBrand = string.Empty;
@@ -227,6 +231,7 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
         NewOrderPrice = 0;
         NewOrderChecked = false;
         IsOrderBeingSendToServer = false;
+
         await GetUserRoweryMethod();
     }
 

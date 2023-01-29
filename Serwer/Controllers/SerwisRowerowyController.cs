@@ -376,5 +376,32 @@ namespace Serwer.Controllers {
             return Ok(returnable);
         }
 
+        /// <summary>
+        /// Delete an order
+        /// </summary>
+        /// <param name="uid">UID of an order</param>
+        /// <returns>HTTP_200 if successful</returns>
+        [HttpDelete("order/{uid}")]
+        [Authorize]
+        public ActionResult DeleteOrder(long uid) {
+            string permission = _userService.GetRole().ToLower();
+            if (permission != "service" && permission != "shop") return Unauthorized();
+
+            _connection.Open();
+            SqliteCommand command = _connection.CreateCommand();
+            command.CommandText = "SELECT uid FROM Bicycles WHERE uid = @uid";
+            command.Parameters.AddWithValue("@uid", uid);
+            SqliteDataReader reader = command.ExecuteReader();
+            if (reader.Read()) {
+                command = _connection.CreateCommand();
+                command.CommandText = "DELETE FROM Bicycles WHERE uid = @uid";
+                command.Parameters.AddWithValue("@uid", uid);
+                command.ExecuteNonQuery();
+                _connection.Close();
+                return Ok();
+            }
+            _connection.Close();
+            return NotFound();
+        }
     }
 }

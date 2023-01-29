@@ -137,7 +137,7 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
     private static async Task<IEnumerable<RowerReturnableExtended>> GetUserRowery() {
         try {
             ISerwisRowerowyApi serwisRowerowyApi = new SerwisRowerowyApi();
-            List<RowerReturnable> rowery = await serwisRowerowyApi.MyOrdersGetAsync();
+            List<RowerReturnable> rowery = await serwisRowerowyApi.ApiServiceMyOrdersGetAsync();
             List<RowerReturnableExtended> roweryExtended = new();
             foreach (var rower in rowery) {
                 DateTime createdAt = DateTime.MinValue;

@@ -326,7 +326,7 @@ namespace Serwer.Controllers {
         /// Get all user orders
         /// </summary>
         /// <returns>List of user orders</returns>
-        [HttpGet("/my-orders")]
+        [HttpGet("my-orders")]
         [Authorize(Roles = "Customer")]
         public ActionResult<IEnumerable<RowerReturnable>> GetMyOrders() {
             string _name = _userService.GetName();

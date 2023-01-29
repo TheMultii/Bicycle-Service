@@ -87,9 +87,7 @@ public partial class App : Application {
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args) {
         base.OnLaunched(args);
-
-        GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(), AppContext.BaseDirectory, "AppDescription".GetLocalized(), "Włączono aplikację"));
-
+        
         await GetService<IActivationService>().ActivateAsync(args);
     }
 }

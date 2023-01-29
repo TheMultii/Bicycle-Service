@@ -3,7 +3,6 @@ using Klient.Core.Models;
 using Klient.ViewModels;
 
 using Microsoft.UI.Xaml.Controls;
-using System.Reflection;
 
 namespace Klient.Views;
 
@@ -28,5 +27,9 @@ public sealed partial class ListDetailsPage : Page {
 
     internal void UpdateAllUsersOrders(RowerExtended rI) {
         ViewModel.UpdateAllUsersOrders(rI);
+    }
+
+    internal void RefreshData(object sender, Microsoft.UI.Xaml.RoutedEventArgs e) {
+        ViewModel.RefreshData();
     }
 }

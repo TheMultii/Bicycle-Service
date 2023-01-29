@@ -227,4 +227,19 @@
   <data name="WebView_Reload.Content" xml:space="preserve">
     <value>Odśwież</value>
   </data>
+  <data name="DataGridPagePermissionError.Message" xml:space="preserve">
+    <value>Musisz posiadać uprawnienia "Customer", by móc składać i wyświetlać swoje zamówienia.</value>
+  </data>
+  <data name="DataGridPagePermissionError.Title" xml:space="preserve">
+    <value>Błąd</value>
+  </data>
+  <data name="ListDetailsPagePermissionError.Message" xml:space="preserve">
+    <value>Musisz posiadać uprawnienia "Service" lub "Shop", by móc wyświetlać i modyfikować statusy zamówień klientów.</value>
+  </data>
+  <data name="ListDetailsPagePermissionError.Title" xml:space="preserve">
+    <value>Błąd</value>
+  </data>
+  <data name="ListDetailsPageTitle.Text" xml:space="preserve">
+    <value>Zarządzanie zamówieniami</value>
+  </data>
 </root>

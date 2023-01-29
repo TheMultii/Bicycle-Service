@@ -1,11 +1,12 @@
 ﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using IdGen;
+using Klient.Behaviors;
 using Klient.Contracts.ViewModels;
 using Klient.Core.Api;
 using Klient.Core.Model;
 using Klient.Core.Models;
+using Klient.Views;
 using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json;
 
@@ -32,6 +33,15 @@ public class ListDetailsViewModel : ObservableRecipient, INavigationAware {
     public bool IsLoading {
         get => _isLoading;
         set => SetProperty(ref _isLoading, value);
+    }
+
+    /// <summary>
+    /// check if user is allowed to modify an order (has permission "Service" or "Shop")
+    /// </summary>
+    private bool _isAllowedToModifyOrder = false;
+    public bool IsAllowedToModifyAnOrder {
+        get => _isAllowedToModifyOrder;
+        set => SetProperty(ref _isAllowedToModifyOrder, value);
     }
 
     private static readonly DateTime epoch = new(2015, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -73,6 +83,8 @@ public class ListDetailsViewModel : ObservableRecipient, INavigationAware {
         }
         if (UserDataDTO == null) return;
         try {
+            IsAllowedToModifyAnOrder = UserDataDTO.Permission == "Service" || UserDataDTO.Permission == "Shop";
+            if (!IsAllowedToModifyAnOrder) return;
             using BinaryReader reader = new(new FileStream(tokenPath, FileMode.Open, FileAccess.ReadWrite));
             _token = reader.ReadString();
             Core.Client.Configuration.Default.BasePath = "https://localhost:7050/";
@@ -84,6 +96,8 @@ public class ListDetailsViewModel : ObservableRecipient, INavigationAware {
     }
 
     public async void OnNavigatedTo(object parameter) => await GetAllUsersOrdersMethod();
+
+    public async void RefreshData() => await GetAllUsersOrdersMethod();
 
     public void OnNavigatedFrom() {
     }

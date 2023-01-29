@@ -22,60 +22,70 @@
         <StackPanel>
             <ProgressBar Visibility="{Binding IsOrderBeingSendToServer}" IsIndeterminate="True" ShowPaused="False" ShowError="False" />
 
-            <Grid x:Name="ContentArea" Visibility="{Binding IsPlacingAnOrder, ConverterParameter='False', Converter={StaticResource boolToVisibilityConverter}}">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+            <InfoBar
+                Visibility="{Binding IsAllowedToPlaceAnOrder, ConverterParameter='inverse', Converter={StaticResource boolToVisibilityConverter}}"
+                Margin="0 0 0 20"
+                IsOpen="True"
+                Severity="Error"
+                IsClosable="False"
+                x:Uid="DataGridPagePermissionError" />
 
-                <StackPanel Margin="0 0 0 15" Orientation="Horizontal" Grid.Row="0"  HorizontalAlignment="Right">
-                    <Button Margin="0 0 10 0" Visibility="{Binding IsLoading, ConverterParameter='False', Converter={StaticResource boolToVisibilityConverter}}" x:Uid="DataGridPage_Add" Grid.Row="0"  Click="MakeAnOrder" />
-                    <Button Visibility="{Binding IsLoading, ConverterParameter='False', Converter={StaticResource boolToVisibilityConverter}}" x:Uid="DataGridPage_Refresh" Grid.Row="0"  Click="RefreshData" />
-                </StackPanel>
+            <StackPanel Visibility="{Binding IsAllowedToPlaceAnOrder,Converter={StaticResource boolToVisibilityConverter}}">
+                <Grid x:Name="ContentArea" Visibility="{Binding IsPlacingAnOrder, ConverterParameter='False', Converter={StaticResource boolToVisibilityConverter}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-                <controls:DataGrid
+                    <StackPanel Margin="0 0 0 15" Orientation="Horizontal" Grid.Row="0"  HorizontalAlignment="Right">
+                        <Button Margin="0 0 10 0" Visibility="{Binding IsLoading, ConverterParameter='False', Converter={StaticResource boolToVisibilityConverter}}" x:Uid="DataGridPage_Add" Grid.Row="0"  Click="MakeAnOrder" />
+                        <Button Visibility="{Binding IsLoading, ConverterParameter='False', Converter={StaticResource boolToVisibilityConverter}}" x:Uid="DataGridPage_Refresh" Grid.Row="0"  Click="RefreshData" />
+                    </StackPanel>
+
+                    <controls:DataGrid
                     Grid.Row="1"
                     AutoGenerateColumns="False"
                     IsReadOnly="True"
                     GridLinesVisibility="Horizontal"
                     Visibility="{Binding IsLoading, ConverterParameter='False', Converter={StaticResource boolToVisibilityConverter}}"
                     ItemsSource="{x:Bind ViewModel.Source, Mode=OneWay}">
-                    <controls:DataGrid.Resources>
-                        <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
-                    </controls:DataGrid.Resources>
-                    <controls:DataGrid.Columns>
-                        <controls:DataGridTextColumn Binding="{Binding Uid}" Header="UID Zamówienia" />
-                        <controls:DataGridTextColumn Binding="{Binding Brand}" Header="Brand" />
-                        <controls:DataGridTextColumn Binding="{Binding Model}" Header="Model" />
-                        <controls:DataGridTextColumn Binding="{Binding Type}" Header="Typ" />
-                        <controls:DataGridTextColumn Binding="{Binding Price}" Header="Cena" />
-                        <controls:DataGridTextColumn Binding="{Binding NewestStatus}" Header="Najnowszy status" />
-                        <controls:DataGridTextColumn Binding="{Binding StatusCount}" Header="Ilość statusów" />
-                        <controls:DataGridTextColumn Binding="{Binding CreatedAt}" Header="Data złożenia zamówienia" />
-                    </controls:DataGrid.Columns>
-                </controls:DataGrid>
+                        <controls:DataGrid.Resources>
+                            <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
+                        </controls:DataGrid.Resources>
+                        <controls:DataGrid.Columns>
+                            <controls:DataGridTextColumn Binding="{Binding Uid}" Header="UID Zamówienia" />
+                            <controls:DataGridTextColumn Binding="{Binding Brand}" Header="Brand" />
+                            <controls:DataGridTextColumn Binding="{Binding Model}" Header="Model" />
+                            <controls:DataGridTextColumn Binding="{Binding Type}" Header="Typ" />
+                            <controls:DataGridTextColumn Binding="{Binding Price}" Header="Cena" />
+                            <controls:DataGridTextColumn Binding="{Binding NewestStatus}" Header="Najnowszy status" />
+                            <controls:DataGridTextColumn Binding="{Binding StatusCount}" Header="Ilość statusów" />
+                            <controls:DataGridTextColumn Binding="{Binding CreatedAt}" Header="Data złożenia zamówienia" />
+                        </controls:DataGrid.Columns>
+                    </controls:DataGrid>
 
-                <ProgressRing Grid.Row="2" IsActive="True" Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
+                    <ProgressRing Grid.Row="2" IsActive="True" Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
 
-            </Grid>
+                </Grid>
 
-            <StackPanel Margin="{Binding IsOrderBeingSendToServer, Converter={StaticResource boolToLoadingMarginConveter}}" Visibility="{Binding IsOrderBeingSendToServer, ConverterParameter='inverse', Converter={StaticResource boolToVisibilityConverter}}">
-                <StackPanel HorizontalAlignment="Left" Visibility="{Binding IsPlacingAnOrder, Converter={StaticResource boolToVisibilityConverter}}">
-                    <TextBox MaxWidth="314.4" Header="Marka" Text="{Binding NewOrderBrand, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Height="60" />
-                    <TextBox MaxWidth="314.4" Header="Model" Text="{Binding NewOrderModel, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Height="60" />
-                    <ComboBox Margin="0 0 0 8" SelectionChanged="ComboBox_SelectionChanged" Header="Typ roweru" PlaceholderText="Wybierz typ">
-                        <x:String>Road</x:String>
-                        <x:String>Mountain</x:String>
-                        <x:String>Hybrid</x:String>
-                    </ComboBox>
-                    <CheckBox Margin="0 0 0 8" Content="Wiem co robię i chcę złożyć nowe zamówienie."
+                <StackPanel Margin="{Binding IsOrderBeingSendToServer, Converter={StaticResource boolToLoadingMarginConveter}}" Visibility="{Binding IsOrderBeingSendToServer, ConverterParameter='inverse', Converter={StaticResource boolToVisibilityConverter}}">
+                    <StackPanel HorizontalAlignment="Left" Visibility="{Binding IsPlacingAnOrder, Converter={StaticResource boolToVisibilityConverter}}">
+                        <TextBox MaxWidth="314.4" Header="Marka" Text="{Binding NewOrderBrand, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Height="60" />
+                        <TextBox MaxWidth="314.4" Header="Model" Text="{Binding NewOrderModel, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Height="60" />
+                        <ComboBox Margin="0 0 0 8" SelectionChanged="ComboBox_SelectionChanged" Header="Typ roweru" PlaceholderText="Wybierz typ">
+                            <x:String>Road</x:String>
+                            <x:String>Mountain</x:String>
+                            <x:String>Hybrid</x:String>
+                        </ComboBox>
+                        <CheckBox Margin="0 0 0 8" Content="Wiem co robię i chcę złożyć nowe zamówienie."
                       Checked="CheckBox_Checked"
                       Unchecked="CheckBox_Unchecked" />
-                    <TextBlock Margin="0 0 0 8" Text="{Binding NewOrderPrice, Mode=OneWay, Converter={StaticResource doubleToPriceStringConverter}}" Visibility="{Binding AllowPlacingAnOrder}" />
-                    <StackPanel Orientation="Horizontal">
-                        <Button Style="{StaticResource AccentButtonStyle}" IsEnabled="{Binding AllowPlacingAnOrder}"  Margin="0 0 10 0"  x:Uid="DataGridPage_CreateAnOrder" Click="MakeAnOrderSubmit" />
-                        <Button x:Uid="DataGridPage_Back" Click="MakeAnOrderCancel" />
+                        <TextBlock Margin="0 0 0 8" Text="{Binding NewOrderPrice, Mode=OneWay, Converter={StaticResource doubleToPriceStringConverter}}" Visibility="{Binding AllowPlacingAnOrder}" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button Style="{StaticResource AccentButtonStyle}" IsEnabled="{Binding AllowPlacingAnOrder}"  Margin="0 0 10 0"  x:Uid="DataGridPage_CreateAnOrder" Click="MakeAnOrderSubmit" />
+                            <Button x:Uid="DataGridPage_Back" Click="MakeAnOrderCancel" />
+                        </StackPanel>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>

@@ -227,4 +227,19 @@
   <data name="ListDetailsPage_Refresh.Content" xml:space="preserve">
     <value>Refresh</value>
   </data>
+  <data name="DataGridPagePermission.Message" xml:space="preserve">
+    <value>You must have "Customer" permissions to place and view a list of your orders.</value>
+  </data>
+  <data name="DataGridPagePermissionError.Title" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="ListDetailsPagePermissionError.Message" xml:space="preserve">
+    <value>You must have the "Service" or "Shop" permissions to be able to view and modify customer order statuses.</value>
+  </data>
+  <data name="ListDetailsPagePermissionError.Title" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="ListDetailsPageTitle.Text" xml:space="preserve">
+    <value>Order management</value>
+  </data>
 </root>

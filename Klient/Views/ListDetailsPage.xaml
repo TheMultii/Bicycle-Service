@@ -106,15 +106,32 @@
 
         <ProgressBar Grid.Row="0" VerticalAlignment="Top" Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" IsIndeterminate="True" ShowPaused="False" ShowError="False" />
 
-        <Grid Grid.Row="1" x:Name="ContentArea">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="1*" />
-            </Grid.RowDefinitions>
+        <TextBlock
+            Grid.Row="0"
+            Visibility="{Binding IsAllowedToModifyAnOrder, ConverterParameter='inverse', Converter={StaticResource boolToVisibilityConverter}}"
+            x:Uid="ListDetailsPageTitle"
+            Margin="0 10 0 24"
+            Style="{ThemeResource TitleTextBlockStyle}" />
 
-            <Button Width="165" Margin="0 0 0 10" Visibility="{Binding IsLoading, ConverterParameter='inverse', Converter={StaticResource boolToVisibilityConverter}}" HorizontalAlignment="Right" Grid.Row="0" x:Uid="ListDetailsPage_Refresh" x:Name="LDRP" />
+        <InfoBar
+            Visibility="{Binding IsAllowedToModifyAnOrder, ConverterParameter='inverse', Converter={StaticResource boolToVisibilityConverter}}"
+            Grid.Row="1"
+            Margin="0 0 0 20"
+            IsOpen="True"
+            Severity="Error"
+            IsClosable="False"
+            x:Uid="ListDetailsPagePermissionError" />
 
-            <controls:ListDetailsView
+        <StackPanel Visibility="{Binding IsAllowedToModifyAnOrder,Converter={StaticResource boolToVisibilityConverter}}">
+            <Grid Grid.Row="1" x:Name="ContentArea">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+
+                <Button Width="165" Margin="0 0 0 10" Visibility="{Binding IsLoading, ConverterParameter='inverse', Converter={StaticResource boolToVisibilityConverter}}" HorizontalAlignment="Right" Grid.Row="0" x:Uid="ListDetailsPage_Refresh" x:Name="LDRP" Click="RefreshData" />
+
+                <controls:ListDetailsView
                 Grid.Row="1"
                 Margin="0 -10 0 0"
                 x:Uid="ListDetails"
@@ -129,6 +146,7 @@
                 NoSelectionContentTemplate="{StaticResource NoSelectionContentTemplate}"
                 SelectedItem="{x:Bind ViewModel.Selected, Mode=TwoWay}"
                 ViewStateChanged="OnViewStateChanged"/>
-        </Grid>
+            </Grid>
+        </StackPanel>
     </Grid>
 </Page>

@@ -95,6 +95,15 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
         set => SetProperty(ref _newOrderPrice, value);
     }
 
+    /// <summary>
+    /// check if user is allowed to place an order (is a customer)
+    /// </summary>
+    private bool _isAllowedToPlaceAnOrder = false;
+    public bool IsAllowedToPlaceAnOrder {
+        get => _isAllowedToPlaceAnOrder;
+        set => SetProperty(ref _isAllowedToPlaceAnOrder, value);
+    }
+
     public ObservableCollection<RowerReturnable> Source { get; } = new();
 
     private static readonly DateTime epoch = new(2015, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -111,13 +120,15 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
         }
         if (UserDataDTO == null) return;
         try {
+            IsAllowedToPlaceAnOrder = UserDataDTO.Permission == "Customer";
+            if (!IsAllowedToPlaceAnOrder) return;
             using BinaryReader reader = new(new FileStream(tokenPath, FileMode.Open, FileAccess.ReadWrite));
             _token = reader.ReadString();
-            Core.Client.Configuration.Default.BasePath = "https://localhost:7050/";
-            if (Core.Client.Configuration.Default.DefaultHeader.ContainsKey("Authorization")) {
-                Core.Client.Configuration.Default.DefaultHeader.Remove("Authorization");
+            Configuration.Default.BasePath = "https://localhost:7050/";
+            if (Configuration.Default.DefaultHeader.ContainsKey("Authorization")) {
+                Configuration.Default.DefaultHeader.Remove("Authorization");
             }
-            Core.Client.Configuration.Default.DefaultHeader.Add("Authorization", "Bearer " + _token);
+            Configuration.Default.DefaultHeader.Add("Authorization", "Bearer " + _token);
         } catch (Exception) { }
     }
 

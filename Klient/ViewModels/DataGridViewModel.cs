@@ -211,7 +211,7 @@ public class DataGridViewModel : ObservableRecipient, INavigationAware {
         try {
             ISerwisRowerowyApi serwisRowerowyApi = new SerwisRowerowyApi();
 
-            await serwisRowerowyApi.ApiServiceBicyclePostAsync(new RowerDTO {
+            await serwisRowerowyApi.ApiServiceBicyclePutAsync(new RowerDTO {
                 Brand = NewOrderBrand,
                 Model = NewOrderModel,
                 Type = NewOrderType,

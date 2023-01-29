@@ -145,7 +145,7 @@ public class MainViewModel : ObservableRecipient {
         };
 
         try {
-            string _token_response = await userApi.ApiUserRegisterPostAsync(userRegisterDTO);
+            string _token_response = await userApi.ApiUserRegisterPutAsync(userRegisterDTO);
             if (_token_response == null) {
                 await DisplayError.show(sender, "Nie udało się zarejestrować użytkownika");
                 IsLoading = false;

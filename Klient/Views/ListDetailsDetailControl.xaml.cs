@@ -156,7 +156,7 @@ public sealed partial class ListDetailsDetailControl : UserControl {
 
     private async Task UpdateOrderStatusMethod(CheckBox cb) {
         ISerwisRowerowyApi serwisRowerowyApi = new SerwisRowerowyApi();
-        await serwisRowerowyApi.ApiServiceOrderUidStatusPutAsync(RI?.Uid ?? 0, new RowerStatusDTO() {
+        await serwisRowerowyApi.ApiServiceOrderUidStatusPatchAsync(RI?.Uid ?? 0, new RowerStatusDTO() {
             Status = cb.Content.ToString()
         });
 

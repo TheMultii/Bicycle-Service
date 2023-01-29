@@ -35,7 +35,7 @@ namespace Serwer.Controllers {
         /// </summary>
         /// <param name="request">JSON with Username, Password, Name and Surname string fields.</param>
         /// <returns>JWT Authorization Token</returns>
-        [HttpPost("register")]
+        [HttpPut("register")]
         public ActionResult<string> Register(UserRegisterDTO request) {
             if (request.Password.Length < 8) {
                 return BadRequest("Password must be at least 8 characters long");
@@ -240,6 +240,63 @@ namespace Serwer.Controllers {
                 signingCredentials: creds
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        /// <summary>
+        /// Delete current logged in user
+        /// </summary>
+        /// <returns>HTTP_200 if successful</returns>
+        [HttpDelete("delete-account"), Authorize]
+        public ActionResult DeleteUser() {
+            _connection.Open();
+            SqliteCommand command = _connection.CreateCommand();
+            command.CommandText = "DELETE FROM Users WHERE login = @name";
+            command.Parameters.AddWithValue("@name", _userService.GetName());
+            command.ExecuteNonQuery();
+            _connection.Close();
+            return Ok();
+        }
+
+        [HttpPatch("update"), Authorize]
+        public ActionResult UpdateUser([FromBody] UserUpdateDTO userUpdateDTO) {
+            _connection.Open();
+            SqliteCommand command = _connection.CreateCommand();
+            command.CommandText = "UPDATE Users SET name = @name, surname = @surname WHERE login = @login";
+            command.Parameters.AddWithValue("@name", userUpdateDTO.Name);
+            command.Parameters.AddWithValue("@surname", userUpdateDTO.Surname);
+            command.Parameters.AddWithValue("@login", _userService.GetName());
+            command.ExecuteNonQuery();
+            _connection.Close();
+            return Ok();
+        }
+
+        [HttpPatch("update-password"), Authorize]
+        public ActionResult UpdatePassword([FromBody] UserUpdatePasswordDTO userUpdatePasswordDTO) {
+            _connection.Open();
+            SqliteCommand command = _connection.CreateCommand();
+            command.CommandText = "SELECT password_hash, password_salt FROM Users WHERE login = @login";
+            command.Parameters.AddWithValue("@login", _userService.GetName());
+            SqliteDataReader reader = command.ExecuteReader();
+            if (!reader.Read()) {
+                return BadRequest("Invalid username or password");
+            }
+            byte[] PasswordHash = (byte[])reader.GetValue(0);
+            byte[] PasswordSalt = (byte[])reader.GetValue(1);
+            if (!VerifyPasswordHash(userUpdatePasswordDTO.OldPassword, PasswordHash, PasswordSalt)) {
+                return BadRequest("Wrong password");
+            }
+            _connection.Close();
+
+            CreatePasswordHash(userUpdatePasswordDTO.NewPassword, out byte[] passwordHash, out byte[] passwordSalt);
+            _connection.Open();
+            command = _connection.CreateCommand();
+            command.CommandText = "UPDATE Users SET password_hash = @password_hash, password_salt = @password_salt WHERE login = @login";
+            command.Parameters.AddWithValue("@password_hash", passwordHash);
+            command.Parameters.AddWithValue("@password_salt", passwordSalt);
+            command.Parameters.AddWithValue("@login", _userService.GetName());
+            command.ExecuteNonQuery();
+            _connection.Close();
+            return Ok();
         }
     }
 }

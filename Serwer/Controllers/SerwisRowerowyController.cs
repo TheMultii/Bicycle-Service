@@ -140,7 +140,7 @@ namespace Serwer.Controllers {
         /// </summary>
         /// <param name="request">User and bike</param>
         /// <returns>Confirmation of order</returns>
-        [HttpPost("bicycle")]
+        [HttpPut("bicycle")]
         [Authorize]
         public ActionResult<RowerReturnable> CreateOrder(RowerDTO request) {
             string permission = _userService.GetRole().ToLower();
@@ -203,7 +203,7 @@ namespace Serwer.Controllers {
         /// <param name="uid">UID of an order</param>
         /// <param name="request">Order JSON</param>
         /// <returns>Modified order</returns>
-        [HttpPut("orders/{uid}")]
+        [HttpPatch("orders/{uid}")]
         [Authorize]
         public ActionResult<RowerReturnable> UpdateOrder(long uid, RowerDTO request) {
             string permission = _userService.GetRole().ToLower();
@@ -251,7 +251,7 @@ namespace Serwer.Controllers {
         /// <param name="uid">UID of an order</param>
         /// <param name="request">JSON with order status</param>
         /// <returns>Modified order</returns>
-        [HttpPut("order/{uid}/status")]
+        [HttpPatch("order/{uid}/status")]
         [Authorize]
         public ActionResult<RowerReturnable> UpdateOrderStatus(long uid, RowerStatusDTO request) {
             string permission = _userService.GetRole().ToLower();
@@ -381,8 +381,7 @@ namespace Serwer.Controllers {
         /// </summary>
         /// <param name="uid">UID of an order</param>
         /// <returns>HTTP_200 if successful</returns>
-        [HttpDelete("order/{uid}")]
-        [Authorize]
+        [HttpDelete("order/{uid}"), Authorize]
         public ActionResult DeleteOrder(long uid) {
             string permission = _userService.GetRole().ToLower();
             if (permission != "service" && permission != "shop") return Unauthorized();

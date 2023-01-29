@@ -14,4 +14,12 @@
         public string Username { get; set; } = string.Empty;
         public string Permission { get; set; } = string.Empty;
     }
+    public class UserUpdateDTO {
+        public string Name { get; set; } = string.Empty;
+        public string Surname { get; set; } = string.Empty;
+    }
+    public class UserUpdatePasswordDTO {
+        public string OldPassword { get; set; } = string.Empty;
+        public string NewPassword { get; set; } = string.Empty;
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using Klient.Core.Model;
+using System.Globalization;
 
 namespace Klient.Core.Models {
     public class RowerReturnableExtended: RowerReturnable {
@@ -9,6 +10,9 @@ namespace Klient.Core.Models {
         }
         public int StatusCount {
             get => Status.Count;
+        }
+        public string PriceLocalizedString {
+            get => string.Format(CultureInfo.CreateSpecificCulture("pl-PL"), "{0:C}", Price);
         }
     }
 }

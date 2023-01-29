@@ -58,7 +58,7 @@
                             <controls:DataGridTextColumn Binding="{Binding Brand}" Header="Brand" />
                             <controls:DataGridTextColumn Binding="{Binding Model}" Header="Model" />
                             <controls:DataGridTextColumn Binding="{Binding Type}" Header="Typ" />
-                            <controls:DataGridTextColumn Binding="{Binding Price}" Header="Cena" />
+                            <controls:DataGridTextColumn Binding="{Binding PriceLocalizedString}" Header="Cena" />
                             <controls:DataGridTextColumn Binding="{Binding NewestStatus}" Header="Najnowszy status" />
                             <controls:DataGridTextColumn Binding="{Binding StatusCount}" Header="Ilość statusów" />
                             <controls:DataGridTextColumn Binding="{Binding CreatedAt}" Header="Data złożenia zamówienia" />

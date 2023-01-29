@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Klient.Core.Api;
 using Klient.Core.Model;
 using Newtonsoft.Json;
@@ -122,10 +121,10 @@ public class MainViewModel : ObservableRecipient {
         string errorMessage = string.Empty;
         bool displayError = false;
 
-        if (_login.Length < 3 || _login.Length > 100) {
+        if (_register_login.Length < 3 || _register_login.Length > 100) {
             errorMessage = "Login musi zawierać od 3 do 100 znaków";
             displayError = true;
-        } else if (_password.Length < 3 || _password.Length > 100) {
+        } else if (_register_password.Length < 3 || _register_password.Length > 100) {
             errorMessage = "Hasło musi zawierać od 3 do 100 znaków";
             displayError = true;
         }
@@ -135,13 +134,75 @@ public class MainViewModel : ObservableRecipient {
         }
         IsLoading = true;
 
+        Core.Client.Configuration.Default.BasePath = "https://localhost:7050/";
+        IUserApi userApi = new UserApi();
+
+        UserRegisterDTO userRegisterDTO = new() {
+            Username = _register_login,
+            Password = _register_password,
+            Name = _register_name,
+            Surname = _register_surname
+        };
+
+        try {
+            string _token_response = await userApi.ApiUserRegisterPostAsync(userRegisterDTO);
+            if (_token_response == null) {
+                await DisplayError.show(sender, "Nie udało się zarejestrować użytkownika");
+                IsLoading = false;
+                return;
+            }
+            
+            await PostLoginRegisterFunction(_token_response, userApi);
+            IsLoading = false;
+
+        } catch (Exception ex) {
+            await DisplayError.show(sender, ex.Message);
+            IsLoading = false;
+            return;
+        }
+
+        IsLoading = false;
+    }
+
+    private async Task PostLoginRegisterFunction(string _token_response, IUserApi userApi) {
+        Token = _token_response.Replace("\"", string.Empty);
+        DateTime tomorrow = DateTime.Now.AddDays(1);
+        TokenExpireDateString = $"Twój token wygaśnie {tomorrow:dd.MM.yyyy HH:mm:ss}.";
+        TokenExpireDate = DateTime.Now.AddDays(1);
+        Login = "";
+        Password = "";
+
+        if (Core.Client.Configuration.Default.DefaultHeader.ContainsKey("Authorization")) {
+            Core.Client.Configuration.Default.DefaultHeader.Remove("Authorization");
+        }
+        Core.Client.Configuration.Default.DefaultHeader.Add("Authorization", $"Bearer {Token}");
+        UserMyDataDTO myData = await userApi.ApiUserInfoGetAsync();
+        UserDataDTO = myData;
+        string myDataJSON = JsonConvert.SerializeObject(myData);
+
+        using FileStream fs = new(tokenPath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+        using FileStream fs2 = new(tokenExpirePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+        using FileStream fs3 = new(myDataPath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+
+        using BinaryWriter writer = new(fs);
+        using BinaryWriter writer2 = new(fs2);
+        using StreamWriter writer3 = new(fs3);
+
         RegisterLogin = "";
         RegisterName = "";
         RegisterSurname = "";
         RegisterPassword = "";
         RegisterPasswordConfirm = "";
+        Login = "";
+        Password = "";
 
-        IsLoading = false;
+        writer.Write(Token);
+        writer2.Write(tomorrow.ToString("dd.MM.yyyy HH:mm:ss"));
+
+        if (myData != null) {
+            await writer3.WriteAsync(myDataJSON);
+        }
+
     }
 
     internal async void LoginButtonClick(object sender, RoutedEventArgs e) {
@@ -168,36 +229,7 @@ public class MainViewModel : ObservableRecipient {
         try {
             string _token_response = await userApi.ApiUserLoginPostAsync(userLoginDTO);
             if (_token_response != null) {
-                Token = _token_response.Replace("\"", string.Empty);
-                DateTime tomorrow = DateTime.Now.AddDays(1);
-                TokenExpireDateString = $"Twój token wygaśnie {tomorrow:dd.MM.yyyy HH:mm:ss}.";
-                TokenExpireDate = DateTime.Now.AddDays(1);
-                Login = "";
-                Password = "";
-                
-                if (Core.Client.Configuration.Default.DefaultHeader.ContainsKey("Authorization")) {
-                    Core.Client.Configuration.Default.DefaultHeader.Remove("Authorization");
-                }
-                Core.Client.Configuration.Default.DefaultHeader.Add("Authorization", $"Bearer {Token}");
-                UserMyDataDTO myData = await userApi.ApiUserInfoGetAsync();
-                UserDataDTO = myData;
-                string myDataJSON = JsonConvert.SerializeObject(myData);
-
-                var fs = new FileStream(tokenPath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-                var fs2 = new FileStream(tokenExpirePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-                using FileStream fs3 = new FileStream(myDataPath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-
-                using BinaryWriter writer = new(fs);
-                using BinaryWriter writer2 = new(fs2);
-                using StreamWriter writer3 = new(fs3);
-
-                writer.Write(Token);
-                writer2.Write(tomorrow.ToString("dd.MM.yyyy HH:mm:ss"));
-                
-                if(myData != null) {
-                    await writer3.WriteAsync(myDataJSON);
-                }
-
+                await PostLoginRegisterFunction(_token_response, userApi);
                 IsLoading = false;
             }
         } catch (Exception) {

@@ -1,3 +1,6 @@
+# ⚠️ Projekt projekt został stworzony jedynie w celach edukacyjnych.<br>The project was created for educational purposes only. ⚠️
+
+
 # HTTP-Projekt
 Ten projekt to rozwiązanie składające się z dwóch projektów: serwera i klienta. Serwer umożliwia składanie zamówień na rowery przez użytkowników. Dodatkowo generuje on dokumentację w Swaggerze. Klient jest napisany w WinUI 3 i umożliwia pracownikom sklepu i magazynu (Magazynierowi i Sprzedawcy) potwierdzanie dostępności i złożenia roweru dla klienta oraz sprzedaży roweru. Klient umożliwia także klientowi złożenie zamówienia na rower.
 
